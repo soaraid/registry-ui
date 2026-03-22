@@ -12,8 +12,8 @@ import { cn } from "@/lib/utils";
 
 const quickStart = [
   "Set REGISTRY_URL and auth env vars in .env.local.",
-  "Open Repositories to browse the live /v2/_catalog response.",
-  "Extend the proxy layer with tags, manifests, and delete handlers.",
+  "Open Repositories to browse the live catalog and lazy tag counts.",
+  "Use repository detail pages for manifest inspection and safe maintenance actions.",
 ];
 
 export function DashboardOverview() {
@@ -25,13 +25,13 @@ export function DashboardOverview() {
       <section className="grid gap-4 xl:grid-cols-[1.35fr_0.95fr]">
         <Card className="overflow-hidden border-white/10 bg-gradient-to-br from-white/[0.08] via-white/[0.02] to-transparent">
           <CardHeader>
-            <Badge className="mb-2 w-fit">soara/registry-ui</Badge>
+            <Badge className="mb-2 w-fit">soaraid/registry-ui</Badge>
             <CardTitle className="max-w-2xl text-3xl tracking-tight md:text-4xl">
               A premium control plane for private Docker registries.
             </CardTitle>
             <CardDescription className="max-w-2xl text-base leading-7">
-              Next.js 15 shell, proxy-backed catalog access, and a dark operational UI with room for
-              manifest inspection and destructive actions.
+              Next.js 15 shell, proxy-backed registry access, and a dark operational UI for browsing,
+              inspecting, and safely maintaining images.
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -67,9 +67,9 @@ export function DashboardOverview() {
                 <Layers3 className="h-4 w-4" />
                 Proxy surface
               </div>
-              <p className="text-lg font-medium">Catalog online</p>
+              <p className="text-lg font-medium">Catalog, tags, manifests, cleanup</p>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                `/api/registry/catalog` is ready for client-side query caching.
+                Registry actions are proxied server-side for auth handling, safer deletes, and client caching.
               </p>
             </div>
           </CardContent>
@@ -106,16 +106,16 @@ export function DashboardOverview() {
             <div className="rounded-2xl border border-white/10 bg-zinc-950/80 p-4">
               <div className="mb-3 flex items-center gap-2 text-sm text-zinc-400">
                 <TerminalSquare className="h-4 w-4" />
-                Development
+                Docker runtime
               </div>
               <code className="block overflow-x-auto text-sm text-zinc-100">
-                npm install
+                cp .env.example .env
                 <br />
-                npm run dev
+                docker compose up --build
               </code>
             </div>
             <p className="mt-4 text-sm leading-6 text-muted-foreground">
-              The initial scaffold focuses on the application shell and the first registry proxy route.
+              The UI container runs independently and connects to a registry that is already running elsewhere.
             </p>
           </CardContent>
         </Card>

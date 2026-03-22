@@ -58,7 +58,7 @@ This repository now includes:
 - `.dockerignore`
 - `docker-compose.yml`
 - `docker-compose.example.yml`
-- `.env.docker.example`
+- `.env.example`
 
 Basic image build:
 
@@ -71,7 +71,7 @@ This project runs as a standalone UI container. It does not start Docker Registr
 Create a Docker env file:
 
 ```bash
-cp .env.docker.example .env
+cp .env.example .env
 ```
 
 Then edit `.env` with the registry endpoint you want this UI to use.

@@ -68,7 +68,7 @@ Production packaging is now included:
 - [.dockerignore](./.dockerignore)
 - [docker-compose.yml](./docker-compose.yml)
 - [docker-compose.example.yml](./docker-compose.example.yml)
-- [.env.docker.example](./.env.docker.example)
+- [.env.example](./.env.example)
 
 Build locally:
 
@@ -81,7 +81,7 @@ This project is now packaged as a standalone UI container. It does not start `re
 For local Docker usage, create a Docker env file first:
 
 ```bash
-cp .env.docker.example .env
+cp .env.example .env
 ```
 
 Then edit `.env` and set `REGISTRY_URL` to your actual registry endpoint.
@@ -92,7 +92,7 @@ Build and run the standalone UI with Compose:
 docker compose up --build
 ```
 
-If your registry is on the host machine, `.env.docker.example` already uses:
+If your registry is on the host machine, set:
 
 ```env
 REGISTRY_URL=http://host.docker.internal:5000
@@ -243,7 +243,7 @@ The proxy layer currently covers:
 Important work still planned:
 
 - Automated tests
-- OSS release files and Docker Hub publishing setup
+- Docker Hub publishing workflow
 
 ## Validation
 
@@ -258,3 +258,4 @@ npm run build
 
 - Product direction: [PRD.md](./PRD.md)
 - Usage guide: [docs/USAGE.md](./docs/USAGE.md)
+- Release checklist: [docs/RELEASE_CHECKLIST.md](./docs/RELEASE_CHECKLIST.md)

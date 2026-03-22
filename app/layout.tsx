@@ -6,7 +6,7 @@ import { QueryProvider } from "@/components/query-provider";
 import "@/app/globals.css";
 
 export const metadata: Metadata = {
-  title: "soara/registry-ui",
+  title: "soaraid/registry-ui",
   description: "Modern Docker Registry UI built with Next.js 15 and Shadcn UI patterns.",
 };
 
