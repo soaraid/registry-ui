@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 222 24% 7%;
+    --foreground: 210 20% 98%;
+    --card: 222 24% 10%;
+    --card-foreground: 210 20% 98%;
+    --popover: 222 24% 10%;
+    --popover-foreground: 210 20% 98%;
+    --primary: 210 20% 98%;
+    --primary-foreground: 222 24% 9%;
+    --secondary: 220 17% 15%;
+    --secondary-foreground: 210 20% 98%;
+    --muted: 220 16% 18%;
+    --muted-foreground: 217 12% 65%;
+    --accent: 214 19% 20%;
+    --accent-foreground: 210 20% 98%;
+    --destructive: 0 62% 43%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 217 18% 18%;
+    --input: 217 18% 18%;
+    --ring: 212 27% 84%;
+    --radius: 1rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: "Space Grotesk", "IBM Plex Sans", "Segoe UI", sans-serif;
+    background-image:
+      radial-gradient(circle at top, rgba(148, 163, 184, 0.16), transparent 32%),
+      linear-gradient(180deg, rgba(24, 24, 27, 0.96), rgba(9, 9, 11, 1));
+  }
+
+  ::selection {
+    background: rgba(244, 244, 245, 0.15);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
