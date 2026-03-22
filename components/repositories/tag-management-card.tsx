@@ -90,7 +90,8 @@ export function TagManagementCard({ repository, tag }: TagManagementCardProps) {
   const metadataLoading = manifestQuery.isLoading && !manifest;
   const deletePreview = deletePreviewQuery.data;
   const affectedTags = deletePreview?.affectedTags ?? [];
-  const multiTagDelete = affectedTags.length > 1;
+  const canDelete = deletePreview?.canDelete ?? false;
+  const multiTagDelete = deletePreview?.deleteMode === "shared-digest";
 
   return (
     <>
@@ -287,9 +288,15 @@ export function TagManagementCard({ repository, tag }: TagManagementCardProps) {
             <Button
               variant="destructive"
               onClick={() => deleteMutation.mutate()}
-              disabled={deleteMutation.isPending || deletePreviewQuery.isLoading}
+              disabled={deleteMutation.isPending || deletePreviewQuery.isLoading || !canDelete}
             >
-              {deleteMutation.isPending ? "Deleting..." : deletePreviewQuery.isLoading ? "Checking impact..." : "Confirm delete"}
+              {deleteMutation.isPending
+                ? "Deleting..."
+                : deletePreviewQuery.isLoading
+                  ? "Checking impact..."
+                  : canDelete
+                    ? "Confirm delete"
+                    : "Delete blocked"}
             </Button>
           </div>
         }
@@ -328,14 +335,7 @@ export function TagManagementCard({ repository, tag }: TagManagementCardProps) {
                   : "border-amber-400/20 bg-amber-400/10 text-amber-50"
               }`}
             >
-              {multiTagDelete ? (
-                <p>
-                  This digest is shared by <span className="font-medium">{affectedTags.length}</span> tags.
-                  Deleting it will remove all of them, not just <span className="font-medium">{tag}</span>.
-                </p>
-              ) : (
-                <p>This digest currently appears to be referenced only by this tag.</p>
-              )}
+              <p>{deletePreview.warning}</p>
             </div>
 
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
@@ -348,6 +348,14 @@ export function TagManagementCard({ repository, tag }: TagManagementCardProps) {
                 ))}
               </div>
             </div>
+
+            {multiTagDelete ? (
+              <div className="rounded-2xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm leading-6 text-amber-50">
+                This UI intentionally blocks delete for shared digests in plain Docker Registry mode. To retire only one
+                tag, push a new manifest for the tag you want to keep, or move cleanup to a registry product that
+                supports native tag deletion.
+              </div>
+            ) : null}
           </div>
         ) : null}
 

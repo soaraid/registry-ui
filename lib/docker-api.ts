@@ -71,6 +71,9 @@ export interface DeleteTagPreview {
   tag: string;
   digest: string;
   affectedTags: string[];
+  canDelete: boolean;
+  deleteMode: "single-tag" | "shared-digest";
+  warning: string;
 }
 
 function buildRegistryUrl(pathname: string, searchParams?: RegistryRequestInit["searchParams"]) {
@@ -519,11 +522,23 @@ export async function getDeleteTagPreview(repository: string, tag: string): Prom
     tag,
     digest,
     affectedTags,
+    canDelete: affectedTags.length <= 1,
+    deleteMode: affectedTags.length <= 1 ? "single-tag" : "shared-digest",
+    warning:
+      affectedTags.length <= 1
+        ? "This manifest digest appears to be referenced by only this tag."
+        : `This manifest digest is shared by ${affectedTags.length} tags. Deleting it would remove all of them.`,
   };
 }
 
 export async function deleteTag(repository: string, tag: string) {
   const preview = await getDeleteTagPreview(repository, tag);
+
+  if (!preview.canDelete) {
+    throw new Error(
+      `Delete blocked: digest ${preview.digest} is shared by ${preview.affectedTags.length} tags (${preview.affectedTags.join(", ")}).`,
+    );
+  }
 
   await deleteManifest(repository, preview.digest);
 

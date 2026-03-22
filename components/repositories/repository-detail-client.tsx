@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useDeferredValue, useState } from "react";
-import { ArrowLeft, RefreshCcw, Search, Tags } from "lucide-react";
+import { ArrowLeft, RefreshCcw, Search, ShieldAlert, Tags } from "lucide-react";
 
 import { useRepositoryTags } from "@/hooks/use-repository-tags";
 import { Badge } from "@/components/ui/badge";
@@ -72,6 +72,20 @@ export function RepositoryDetailClient({ repository }: RepositoryDetailClientPro
           <Badge variant="outline">Live registry data</Badge>
           <Badge variant="outline">Search deferred for smoother filtering</Badge>
           <Badge variant="outline">Dangerous actions require confirmation</Badge>
+          <Badge variant="outline">Shared-digest deletes are blocked</Badge>
+        </CardContent>
+      </Card>
+
+      <Card className="border-amber-400/20 bg-amber-400/10">
+        <CardContent className="flex gap-4 p-6">
+          <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-amber-200" />
+          <div className="space-y-2 text-sm leading-6 text-amber-50">
+            <p className="font-medium">Registry-safe delete policy</p>
+            <p>
+              Plain Docker Registry deletes manifests by digest, not tags. If multiple tags share one digest, removing
+              it would remove all of them. This UI now blocks those deletes and only allows singleton-digest cleanup.
+            </p>
+          </div>
         </CardContent>
       </Card>
 

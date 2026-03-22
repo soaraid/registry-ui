@@ -67,6 +67,21 @@ export async function DELETE(request: Request) {
       );
     }
 
+    const preview = await getDeleteTagPreview(repository, tag);
+
+    if (!preview.canDelete) {
+      return NextResponse.json(
+        {
+          error: preview.warning,
+          digest: preview.digest,
+          affectedTags: preview.affectedTags,
+        },
+        {
+          status: 409,
+        },
+      );
+    }
+
     const result = await deleteTag(repository, tag);
 
     return NextResponse.json({

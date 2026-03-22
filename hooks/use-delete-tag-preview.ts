@@ -26,4 +26,3 @@ export function useDeleteTagPreview(repository: string, tag: string, enabled: bo
     staleTime: 60_000,
   });
 }
-
