@@ -1,6 +1,10 @@
+"use client";
+
 import type { ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import { ShieldCheck } from "lucide-react";
 
+import { LogoutButton } from "@/components/auth/logout-button";
 import { SidebarNav } from "@/components/sidebar-nav";
 import { Badge } from "@/components/ui/badge";
 
@@ -9,6 +13,12 @@ interface AppShellProps {
 }
 
 export function AppShell({ children }: AppShellProps) {
+  const pathname = usePathname();
+
+  if (pathname.startsWith("/login")) {
+    return <>{children}</>;
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="pointer-events-none fixed inset-0 bg-grain opacity-90" />
@@ -40,6 +50,10 @@ export function AppShell({ children }: AppShellProps) {
               <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Design Tone</p>
               <p className="mt-2 text-sm text-foreground">Dark zinc surfaces, restrained glow, and fast operator workflows.</p>
             </div>
+
+            <div className="mt-4">
+              <LogoutButton />
+            </div>
           </div>
         </aside>
 
@@ -57,6 +71,9 @@ export function AppShell({ children }: AppShellProps) {
 
             <div className="rounded-[28px] border border-white/10 bg-black/30 p-4 shadow-glow backdrop-blur-2xl">
               <SidebarNav />
+            </div>
+            <div className="rounded-[28px] border border-white/10 bg-black/30 p-4 shadow-glow backdrop-blur-2xl">
+              <LogoutButton />
             </div>
           </div>
 

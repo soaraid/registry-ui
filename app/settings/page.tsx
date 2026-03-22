@@ -1,4 +1,4 @@
-import { getRegistryEnv } from "@/lib/env";
+import { getAppAuthEnv, getRegistryEnv } from "@/lib/env";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -8,9 +8,13 @@ const envRows = [
   ["REGISTRY_USERNAME", "Optional username for Basic auth or token exchange."],
   ["REGISTRY_PASSWORD", "Optional password for Basic auth or token exchange."],
   ["REGISTRY_BEARER_TOKEN", "Optional static bearer token for pre-issued registry auth."],
+  ["APP_AUTH_USERNAME", "Optional single-user username for this UI."],
+  ["APP_AUTH_PASSWORD", "Optional single-user password for this UI."],
+  ["APP_SESSION_SECRET", "Optional HMAC secret used to sign login session cookies."],
 ];
 
 export default function SettingsPage() {
+  const appAuthEnv = getAppAuthEnv();
   let resolvedConnection: { host: string; authMode: string } | null = null;
 
   try {
@@ -39,7 +43,7 @@ export default function SettingsPage() {
           <CardDescription>Resolved connection</CardDescription>
           <CardTitle>Current runtime mode</CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-4 md:grid-cols-2">
+        <CardContent className="grid gap-4 md:grid-cols-3">
           <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
             <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Registry host</p>
             <p className="mt-2 text-sm text-foreground">{resolvedConnection?.host ?? "Not configured"}</p>
@@ -49,6 +53,10 @@ export default function SettingsPage() {
             <p className="mt-2 text-sm capitalize text-foreground">
               {resolvedConnection?.authMode ?? "Unavailable until env is set"}
             </p>
+          </div>
+          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">App session auth</p>
+            <p className="mt-2 text-sm text-foreground">{appAuthEnv.enabled ? "Enabled" : "Disabled"}</p>
           </div>
         </CardContent>
       </Card>

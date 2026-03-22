@@ -8,6 +8,13 @@ export interface RegistryEnv {
   authMode: RegistryAuthMode;
 }
 
+export interface AppAuthEnv {
+  enabled: boolean;
+  username?: string;
+  password?: string;
+  sessionSecret?: string;
+}
+
 function trimTrailingSlash(value: string) {
   return value.replace(/\/+$/, "");
 }
@@ -38,3 +45,15 @@ export function getRegistryEnv(): RegistryEnv {
   };
 }
 
+export function getAppAuthEnv(): AppAuthEnv {
+  const username = process.env.APP_AUTH_USERNAME?.trim() || undefined;
+  const password = process.env.APP_AUTH_PASSWORD?.trim() || undefined;
+  const sessionSecret = process.env.APP_SESSION_SECRET?.trim() || undefined;
+
+  return {
+    enabled: Boolean(username && password && sessionSecret),
+    username,
+    password,
+    sessionSecret,
+  };
+}
