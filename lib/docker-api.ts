@@ -76,6 +76,78 @@ export interface DeleteTagPreview {
   warning: string;
 }
 
+export interface RegistryHealthReport {
+  checkedAt: string;
+  registryHost: string;
+  authMode: string;
+  reachable: boolean;
+  registryApiAvailable: boolean;
+  catalogAccessible: boolean;
+  responseTimeMs: number;
+  catalogProbeCount: number | null;
+  error?: string;
+  catalogError?: string;
+}
+
+export interface RepositoryDigestGraph {
+  tags: string[];
+  tagToDigest: Record<string, string>;
+  digestToTags: Record<string, string[]>;
+  unresolvedTags: Array<{
+    tag: string;
+    reason: string;
+  }>;
+}
+
+export interface BulkCleanupRule {
+  keepLast: number;
+  prefix?: string;
+  regex?: string;
+  sortMode: "natural-desc-tag";
+}
+
+export interface BulkCleanupBlockedTag {
+  tag: string;
+  digest?: string;
+  reason: string;
+  relatedTags: string[];
+}
+
+export interface BulkCleanupDeletableTag {
+  tag: string;
+  digest: string;
+}
+
+export interface BulkCleanupPreview {
+  repository: string;
+  checkedAt: string;
+  rule: BulkCleanupRule;
+  totalTags: number;
+  matchedTags: string[];
+  keptTags: string[];
+  deletable: BulkCleanupDeletableTag[];
+  blocked: BulkCleanupBlockedTag[];
+  executionReady: boolean;
+  summary: {
+    matchedCount: number;
+    keptCount: number;
+    deletableCount: number;
+    blockedCount: number;
+  };
+}
+
+export interface BulkCleanupExecutionResult {
+  repository: string;
+  executedAt: string;
+  preview: BulkCleanupPreview;
+  deleted: BulkCleanupDeletableTag[];
+  failed: Array<{
+    tag: string;
+    digest: string;
+    reason: string;
+  }>;
+}
+
 function buildRegistryUrl(pathname: string, searchParams?: RegistryRequestInit["searchParams"]) {
   const { url } = getRegistryEnv();
   const target = new URL(`${url}${pathname}`);
@@ -127,8 +199,22 @@ function getRegistryImageBase() {
   return pathname ? `${registryUrl.host}/${pathname}` : registryUrl.host;
 }
 
+function getRegistryHost() {
+  const env = getRegistryEnv();
+  return new URL(env.url).host;
+}
+
 function unique(values: Array<string | undefined>) {
   return Array.from(new Set(values.filter((value): value is string => Boolean(value))));
+}
+
+const naturalTagCollator = new Intl.Collator(undefined, {
+  numeric: true,
+  sensitivity: "base",
+});
+
+function sortTagsDescending(tags: string[]) {
+  return [...tags].sort((left, right) => naturalTagCollator.compare(right, left));
 }
 
 async function getBearerToken(scope?: string) {
@@ -319,6 +405,70 @@ export async function getCatalog(options?: {
   });
 }
 
+export async function getRegistryHealthReport(): Promise<RegistryHealthReport> {
+  const startedAt = Date.now();
+
+  try {
+    const env = getRegistryEnv();
+    const response = await registryFetch("/v2/", {
+      method: "GET",
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw await parseRegistryError(response);
+    }
+
+    let catalogAccessible = true;
+    let catalogProbeCount: number | null = null;
+    let catalogError: string | undefined;
+
+    try {
+      const catalog = await getCatalog({ limit: 1 });
+      catalogProbeCount = catalog.repositories.length;
+    } catch (error) {
+      catalogAccessible = false;
+      catalogError = error instanceof Error ? error.message : "Catalog probe failed.";
+    }
+
+    return {
+      checkedAt: new Date().toISOString(),
+      registryHost: getRegistryHost(),
+      authMode: env.authMode,
+      reachable: true,
+      registryApiAvailable: true,
+      catalogAccessible,
+      responseTimeMs: Date.now() - startedAt,
+      catalogProbeCount,
+      catalogError,
+    };
+  } catch (error) {
+    return {
+      checkedAt: new Date().toISOString(),
+      registryHost: (() => {
+        try {
+          return getRegistryHost();
+        } catch {
+          return "Unavailable";
+        }
+      })(),
+      authMode: (() => {
+        try {
+          return getRegistryEnv().authMode;
+        } catch {
+          return "unknown";
+        }
+      })(),
+      reachable: false,
+      registryApiAvailable: false,
+      catalogAccessible: false,
+      responseTimeMs: Date.now() - startedAt,
+      catalogProbeCount: null,
+      error: error instanceof Error ? error.message : "Registry health check failed.",
+    };
+  }
+}
+
 export async function getTags(repository: string, options?: { limit?: number; last?: string }) {
   return registryRequest<RegistryTagsResponse>(`/v2/${repository}/tags/list`, {
     scope: `repository:${repository}:pull`,
@@ -327,6 +477,64 @@ export async function getTags(repository: string, options?: { limit?: number; la
       last: options?.last,
     },
   });
+}
+
+export async function getRepositoryDigestGraph(repository: string): Promise<RepositoryDigestGraph> {
+  const tagsPayload = await getTags(repository);
+  const tags = sortTagsDescending(tagsPayload.tags ?? []);
+  const digestEntries = await Promise.all(
+    tags.map(async (tag) => {
+      try {
+        return {
+          tag,
+          digest: await getManifestDigest(repository, tag),
+        };
+      } catch (error) {
+        return {
+          tag,
+          error: error instanceof Error ? error.message : "Digest resolution failed unexpectedly.",
+        };
+      }
+    }),
+  );
+
+  const tagToDigest: Record<string, string> = {};
+  const digestToTags: Record<string, string[]> = {};
+  const unresolvedTags: RepositoryDigestGraph["unresolvedTags"] = [];
+
+  for (const entry of digestEntries) {
+    if ("error" in entry) {
+      unresolvedTags.push({
+        tag: entry.tag,
+        reason: entry.error ?? "Digest resolution failed unexpectedly.",
+      });
+      continue;
+    }
+
+    const digest = entry.digest;
+
+    if (!digest) {
+      unresolvedTags.push({
+        tag: entry.tag,
+        reason: "Digest could not be resolved.",
+      });
+      continue;
+    }
+
+    tagToDigest[entry.tag] = digest;
+    digestToTags[digest] = [...(digestToTags[digest] ?? []), entry.tag];
+  }
+
+  for (const digest of Object.keys(digestToTags)) {
+    digestToTags[digest] = sortTagsDescending(digestToTags[digest] ?? []);
+  }
+
+  return {
+    tags,
+    tagToDigest,
+    digestToTags,
+    unresolvedTags,
+  };
 }
 
 export async function getManifest(repository: string, reference: string) {
@@ -496,26 +704,14 @@ export async function deleteManifest(repository: string, digest: string) {
 }
 
 export async function getDeleteTagPreview(repository: string, tag: string): Promise<DeleteTagPreview> {
-  const digest = await getManifestDigest(repository, tag);
+  const digestGraph = await getRepositoryDigestGraph(repository);
+  const digest = digestGraph.tagToDigest[tag];
 
   if (!digest) {
     throw new Error(`Unable to resolve a manifest digest for tag "${tag}".`);
   }
 
-  const tagsPayload = await getTags(repository);
-  const tags = tagsPayload.tags ?? [];
-  const digestEntries = await Promise.allSettled(
-    tags.map(async (candidateTag) => ({
-      tag: candidateTag,
-      digest: await getManifestDigest(repository, candidateTag),
-    })),
-  );
-
-  const affectedTags = digestEntries
-    .flatMap((entry) => (entry.status === "fulfilled" ? [entry.value] : []))
-    .filter((entry) => entry.digest === digest)
-    .map((entry) => entry.tag)
-    .sort((left, right) => left.localeCompare(right));
+  const affectedTags = digestGraph.digestToTags[digest] ?? [tag];
 
   return {
     repository,
@@ -528,6 +724,147 @@ export async function getDeleteTagPreview(repository: string, tag: string): Prom
       affectedTags.length <= 1
         ? "This manifest digest appears to be referenced by only this tag."
         : `This manifest digest is shared by ${affectedTags.length} tags. Deleting it would remove all of them.`,
+  };
+}
+
+export async function getBulkCleanupPreview(
+  repository: string,
+  options: {
+    keepLast?: number;
+    prefix?: string;
+    regex?: string;
+  },
+): Promise<BulkCleanupPreview> {
+  const keepLast = Math.max(0, options.keepLast ?? 0);
+  const prefix = options.prefix?.trim() || undefined;
+  const regexSource = options.regex?.trim() || undefined;
+  const matcher = regexSource ? new RegExp(regexSource) : null;
+  const digestGraph = await getRepositoryDigestGraph(repository);
+  const matchedTags = digestGraph.tags.filter((tag) => {
+    if (prefix && !tag.startsWith(prefix)) {
+      return false;
+    }
+
+    if (matcher && !matcher.test(tag)) {
+      return false;
+    }
+
+    return true;
+  });
+  const keptTags = matchedTags.slice(0, keepLast);
+  const candidateTags = matchedTags.slice(keepLast);
+  const unresolvedMap = new Map(digestGraph.unresolvedTags.map((entry) => [entry.tag, entry.reason]));
+  const deletable: BulkCleanupDeletableTag[] = [];
+  const blocked: BulkCleanupBlockedTag[] = [];
+
+  for (const tag of candidateTags) {
+    const unresolvedReason = unresolvedMap.get(tag);
+
+    if (unresolvedReason) {
+      blocked.push({
+        tag,
+        reason: unresolvedReason,
+        relatedTags: [],
+      });
+      continue;
+    }
+
+    const digest = digestGraph.tagToDigest[tag];
+
+    if (!digest) {
+      blocked.push({
+        tag,
+        reason: "Digest could not be resolved.",
+        relatedTags: [],
+      });
+      continue;
+    }
+
+    const relatedTags = digestGraph.digestToTags[digest] ?? [tag];
+
+    if (relatedTags.length > 1) {
+      blocked.push({
+        tag,
+        digest,
+        reason: `Digest is shared by ${relatedTags.length} tags.`,
+        relatedTags,
+      });
+      continue;
+    }
+
+    deletable.push({
+      tag,
+      digest,
+    });
+  }
+
+  return {
+    repository,
+    checkedAt: new Date().toISOString(),
+    rule: {
+      keepLast,
+      prefix,
+      regex: regexSource,
+      sortMode: "natural-desc-tag",
+    },
+    totalTags: digestGraph.tags.length,
+    matchedTags,
+    keptTags,
+    deletable,
+    blocked,
+    executionReady: deletable.length > 0,
+    summary: {
+      matchedCount: matchedTags.length,
+      keptCount: keptTags.length,
+      deletableCount: deletable.length,
+      blockedCount: blocked.length,
+    },
+  };
+}
+
+export async function executeBulkCleanup(
+  repository: string,
+  options: {
+    keepLast?: number;
+    prefix?: string;
+    regex?: string;
+  },
+): Promise<BulkCleanupExecutionResult> {
+  const preview = await getBulkCleanupPreview(repository, options);
+  const settledDeletes = await Promise.allSettled(
+    preview.deletable.map(async (item) => {
+      await deleteManifest(repository, item.digest);
+      return item;
+    }),
+  );
+  const deleted: BulkCleanupDeletableTag[] = [];
+  const failed: BulkCleanupExecutionResult["failed"] = [];
+
+  settledDeletes.forEach((entry, index) => {
+    const item = preview.deletable[index];
+
+    if (!item) {
+      return;
+    }
+
+    if (entry.status === "fulfilled") {
+      deleted.push(item);
+      return;
+    }
+
+    failed.push({
+      tag: item.tag,
+      digest: item.digest,
+      reason: entry.reason instanceof Error ? entry.reason.message : "Delete failed unexpectedly.",
+    });
+  });
+
+  return {
+    repository,
+    executedAt: new Date().toISOString(),
+    preview,
+    deleted,
+    failed,
   };
 }
 

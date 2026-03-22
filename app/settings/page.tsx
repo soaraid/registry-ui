@@ -1,4 +1,5 @@
 import { getAppAuthEnv, getRegistryEnv } from "@/lib/env";
+import { RegistryHealthPanel } from "@/components/settings/registry-health-panel";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -60,6 +61,8 @@ export default function SettingsPage() {
           </div>
         </CardContent>
       </Card>
+
+      <RegistryHealthPanel />
 
       <Card>
         <CardHeader>

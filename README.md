@@ -1,4 +1,4 @@
-# soara/registry-ui
+# soaraid/registry-ui
 
 A modern Docker Registry UI built with Next.js 15, Tailwind CSS, and Shadcn-style components.
 
@@ -16,8 +16,10 @@ Implemented now:
 - Manifest inspector dialog with raw JSON, layers, platform metadata, and digest details
 - Delete preview flow with impact analysis
 - Hard block for shared-digest deletes in plain Docker Registry mode
+- Safe bulk cleanup preview and execution for singleton digests only
 - Next.js Route Handler proxy at `/api/registry/catalog`
 - Next.js Route Handlers for tags, manifests, and delete-by-tag actions
+- Registry health diagnostics route and Settings test action
 - Centralized registry client logic in `lib/docker-api.ts`
 - Registry auth support for anonymous, Basic auth, and bearer-token flows
 - Optional env-driven app login session for UI access
@@ -58,13 +60,70 @@ npm run dev
 
 5. Open `http://localhost:3000`
 
+## Docker
+
+Production packaging is now included:
+
+- [Dockerfile](./Dockerfile)
+- [.dockerignore](./.dockerignore)
+- [docker-compose.yml](./docker-compose.yml)
+- [docker-compose.example.yml](./docker-compose.example.yml)
+- [.env.docker.example](./.env.docker.example)
+
+Build locally:
+
+```bash
+docker build -t soaraid/registry-ui:local .
+```
+
+This project is now packaged as a standalone UI container. It does not start `registry:2` for you. Point it at a registry that is already running in another project or on another host.
+
+For local Docker usage, create a Docker env file first:
+
+```bash
+cp .env.docker.example .env
+```
+
+Then edit `.env` and set `REGISTRY_URL` to your actual registry endpoint.
+
+Build and run the standalone UI with Compose:
+
+```bash
+docker compose up --build
+```
+
+If your registry is on the host machine, `.env.docker.example` already uses:
+
+```env
+REGISTRY_URL=http://host.docker.internal:5000
+```
+
+If your registry is running in another Compose project on a shared Docker network, set for example:
+
+```env
+REGISTRY_URL=http://registry:5000
+```
+
+Run the built image directly:
+
+```bash
+docker run --rm -p 3000:3000 \
+  -e REGISTRY_URL=http://host.docker.internal:5000 \
+  -e APP_AUTH_USERNAME=operator \
+  -e APP_AUTH_PASSWORD=change-me \
+  -e APP_SESSION_SECRET=replace-with-a-long-random-secret \
+  soaraid/registry-ui:local
+```
+
+Docker Hub style usage is shown in [docker-compose.example.yml](./docker-compose.example.yml). That file is meant to be copied into another project such as `soaraid/soara-hub`.
+
 ## Environment Variables
 
 `REGISTRY_URL`
 
 - Required
 - Base URL of your Docker Registry V2 instance
-- Example: `http://registry.internal:5000`
+- Examples: `http://host.docker.internal:5000`, `http://registry:5000`, `https://registry.example.com`
 
 `REGISTRY_USERNAME`
 
@@ -95,6 +154,8 @@ npm run dev
 
 - Optional
 - Secret used to sign the session cookie for login protection
+
+App login protection is enabled only when all three `APP_AUTH_*` values are present.
 
 ## How It Works
 
@@ -138,10 +199,13 @@ Because of that, the UI now blocks deletion when a digest is shared by more than
 - Manifest inspector dialog
 - Delete impact preview
 - Shared-digest delete blocking for safety
+- Bulk cleanup preview with keep-last, prefix, and regex filters
+- Batch delete execution for safe singleton-digest candidates
 
 `/settings`
 
 - Explains the registry env contract used by the server-side proxy
+- Includes a live registry connectivity test and diagnostics panel
 
 `/login`
 
@@ -152,10 +216,13 @@ Because of that, the UI now blocks deletion when a digest is shared by more than
 Available now:
 
 - `GET /api/registry/catalog`
+- `GET /api/registry/health`
 - `GET /api/registry/tags?repository=<name>`
 - `GET /api/registry/manifests?repository=<name>&reference=<tag-or-digest>`
 - `GET /api/registry/tag?repository=<name>&tag=<tag>`
 - `DELETE /api/registry/tag?repository=<name>&tag=<tag>&confirmed=true`
+- `POST /api/registry/cleanup/preview`
+- `POST /api/registry/cleanup/execute`
 - `POST /api/auth/login`
 - `POST /api/auth/logout`
 
@@ -175,10 +242,7 @@ The proxy layer currently covers:
 
 Important work still planned:
 
-- Docker packaging for production deployment
-- Registry connection test in Settings
 - Automated tests
-- Bulk cleanup workflows
 - OSS release files and Docker Hub publishing setup
 
 ## Validation

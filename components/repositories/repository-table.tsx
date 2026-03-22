@@ -1,16 +1,61 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Box, Search } from "lucide-react";
 
 import { useRegistryCatalog } from "@/hooks/use-registry-catalog";
+import { useRepositoryTags } from "@/hooks/use-repository-tags";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { buildRepositoryPagePath } from "@/lib/paths";
+
+function RepositoryTagCount({ repository }: { repository: string }) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [shouldLoad, setShouldLoad] = useState(false);
+  const tagsQuery = useRepositoryTags(repository, shouldLoad);
+
+  useEffect(() => {
+    if (shouldLoad || !containerRef.current) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setShouldLoad(true);
+          observer.disconnect();
+        }
+      },
+      {
+        rootMargin: "240px",
+      },
+    );
+
+    observer.observe(containerRef.current);
+
+    return () => observer.disconnect();
+  }, [shouldLoad]);
+
+  return (
+    <div ref={containerRef} className="flex min-h-9 items-center">
+      {!shouldLoad ? (
+        <Badge variant="outline">Tag count on scroll</Badge>
+      ) : tagsQuery.isLoading ? (
+        <Skeleton className="h-6 w-20 rounded-full" />
+      ) : tagsQuery.isError ? (
+        <Badge variant="outline">Tags unavailable</Badge>
+      ) : (
+        <Badge variant="outline">
+          {tagsQuery.data?.count ?? 0} tag{tagsQuery.data?.count === 1 ? "" : "s"}
+        </Badge>
+      )}
+    </div>
+  );
+}
 
 export function RepositoryTable() {
   const [query, setQuery] = useState("");
@@ -54,38 +99,40 @@ export function RepositoryTable() {
             <TableHeader>
               <TableRow>
                 <TableHead>Repository</TableHead>
-                <TableHead>Surface</TableHead>
+                <TableHead>Tags</TableHead>
                 <TableHead className="text-right">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {repositories.map((repository) => (
-                <TableRow key={repository}>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <span className="rounded-xl border border-white/10 bg-white/[0.04] p-2">
-                        <Box className="h-4 w-4 text-muted-foreground" />
-                      </span>
-                      <div>
-                        <div className="font-medium">{repository}</div>
-                        <div className="text-xs text-muted-foreground">Synced from /v2/_catalog</div>
+              {repositories.map((repository) => {
+                return (
+                  <TableRow key={repository}>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <span className="rounded-xl border border-white/10 bg-white/[0.04] p-2">
+                          <Box className="h-4 w-4 text-muted-foreground" />
+                        </span>
+                        <div>
+                          <div className="font-medium">{repository}</div>
+                          <div className="text-xs text-muted-foreground">Synced from /v2/_catalog</div>
+                        </div>
                       </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline">Tags pending</Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Link
-                      href={buildRepositoryPagePath(repository)}
-                      className="inline-flex items-center gap-2 text-sm text-foreground transition-colors hover:text-white"
-                    >
-                      Manage
-                      <ArrowUpRight className="h-4 w-4" />
-                    </Link>
-                  </TableCell>
-                </TableRow>
-              ))}
+                    </TableCell>
+                    <TableCell>
+                      <RepositoryTagCount repository={repository} />
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Link
+                        href={buildRepositoryPagePath(repository)}
+                        className="inline-flex items-center gap-2 text-sm text-foreground transition-colors hover:text-white"
+                      >
+                        Manage
+                        <ArrowUpRight className="h-4 w-4" />
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
               {repositories.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={3} className="py-10 text-center text-muted-foreground">

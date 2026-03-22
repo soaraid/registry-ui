@@ -1,0 +1,17 @@
+services:
+  registry-ui:
+    image: soaraid/registry-ui:latest
+    container_name: registry-ui
+    restart: unless-stopped
+    ports:
+      - "8001:3000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      REGISTRY_URL: http://registry:5000
+      REGISTRY_USERNAME: ""
+      REGISTRY_PASSWORD: ""
+      REGISTRY_BEARER_TOKEN: ""
+      APP_AUTH_USERNAME: operator
+      APP_AUTH_PASSWORD: change-me
+      APP_SESSION_SECRET: replace-with-a-long-random-secret

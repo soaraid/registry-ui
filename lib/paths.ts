@@ -35,3 +35,11 @@ export function buildTagApiPath(repository: string, tag: string) {
 
   return `/api/registry/tag?${searchParams.toString()}`;
 }
+
+export function getBulkCleanupPreviewApiPath() {
+  return "/api/registry/cleanup/preview";
+}
+
+export function getBulkCleanupExecuteApiPath() {
+  return "/api/registry/cleanup/execute";
+}

@@ -71,26 +71,28 @@ export function Dialog({
         aria-modal="true"
         aria-labelledby="dialog-title"
         className={cn(
-          "relative z-10 my-auto flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-[28px] border border-white/10 bg-zinc-950/95 shadow-glow",
+          "relative z-10 my-auto flex max-h-[90vh] w-full max-w-4xl min-w-0 flex-col overflow-hidden rounded-[28px] border border-white/10 bg-zinc-950/95 shadow-glow",
           className,
         )}
       >
         <div className="flex items-start justify-between gap-4 border-b border-white/10 px-6 py-5">
-          <div>
-            <h3 id="dialog-title" className="text-xl font-semibold tracking-tight">
+          <div className="min-w-0 flex-1">
+            <h3 id="dialog-title" className="break-all text-xl font-semibold tracking-tight">
               {title}
             </h3>
-            {description ? <p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p> : null}
+            {description ? (
+              <p className="mt-2 break-words text-sm leading-6 text-muted-foreground">{description}</p>
+            ) : null}
           </div>
           <button
             type="button"
-            className="rounded-xl border border-white/10 bg-white/5 p-2 text-muted-foreground transition-colors hover:bg-white/10 hover:text-foreground"
+            className="shrink-0 rounded-xl border border-white/10 bg-white/5 p-2 text-muted-foreground transition-colors hover:bg-white/10 hover:text-foreground"
             onClick={() => onOpenChange(false)}
           >
             <X className="h-4 w-4" />
           </button>
         </div>
-        <div className="min-h-0 flex-1 overflow-auto px-6 py-5">{children}</div>
+        <div className="min-h-0 min-w-0 flex-1 overflow-auto px-6 py-5">{children}</div>
         {footer ? <div className="border-t border-white/10 px-6 py-4">{footer}</div> : null}
       </div>
     </div>,

@@ -22,6 +22,7 @@ import { CodeBlock } from "@/components/ui/code-block";
 import { Dialog } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { buildTagApiPath } from "@/lib/paths";
+import { cn } from "@/lib/utils";
 
 interface TagManagementCardProps {
   repository: string;
@@ -45,11 +46,19 @@ function formatBytes(value: number | null) {
   return `${currentValue.toFixed(currentValue >= 10 || unitIndex === 0 ? 0 : 1)} ${units[unitIndex]}`;
 }
 
-function DetailRow({ label, value }: { label: string; value: string }) {
+function DetailRow({
+  label,
+  value,
+  valueClassName,
+}: {
+  label: string;
+  value: string;
+  valueClassName?: string;
+}) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+    <div className="min-w-0 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
       <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">{label}</p>
-      <p className="mt-2 text-sm text-foreground">{value}</p>
+      <p className={cn("mt-2 min-w-0 break-all text-sm text-foreground", valueClassName)}>{value}</p>
     </div>
   );
 }
@@ -99,8 +108,8 @@ export function TagManagementCard({ repository, tag }: TagManagementCardProps) {
         <CardHeader className="gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="space-y-2">
             <Badge className="w-fit bg-white/8">{tag}</Badge>
-            <div>
-              <CardTitle className="text-xl">{repository}</CardTitle>
+            <div className="min-w-0">
+              <CardTitle className="break-all text-xl">{repository}</CardTitle>
               <CardDescription className="mt-2 break-all font-mono text-xs">
                 {manifest?.digest ?? "Digest will appear after manifest metadata loads."}
               </CardDescription>
@@ -218,7 +227,11 @@ export function TagManagementCard({ repository, tag }: TagManagementCardProps) {
         ) : manifest ? (
           <div className="space-y-6">
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              <DetailRow label="Digest" value={manifest.digest ?? "Unavailable"} />
+              <DetailRow
+                label="Digest"
+                value={manifest.digest ?? "Unavailable"}
+                valueClassName="font-mono text-xs leading-6"
+              />
               <DetailRow
                 label="Architecture"
                 value={manifest.architectures.length ? manifest.architectures.join(", ") : "Unknown"}
@@ -237,7 +250,7 @@ export function TagManagementCard({ repository, tag }: TagManagementCardProps) {
                       className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm"
                     >
                       <p className="break-all font-mono text-xs text-foreground">{layer.digest}</p>
-                      <p className="mt-2 text-xs text-muted-foreground">
+                      <p className="mt-2 break-all text-xs text-muted-foreground">
                         {layer.mediaType ?? "Unknown media type"} · {formatBytes(layer.size ?? null)}
                       </p>
                     </div>
@@ -255,7 +268,7 @@ export function TagManagementCard({ repository, tag }: TagManagementCardProps) {
                       key={item.digest}
                       className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm"
                     >
-                      <p className="font-medium">
+                      <p className="break-all font-medium">
                         {item.architecture ?? "unknown"} / {item.os ?? "unknown"}
                       </p>
                       <p className="mt-2 break-all font-mono text-xs text-muted-foreground">{item.digest}</p>
@@ -302,14 +315,14 @@ export function TagManagementCard({ repository, tag }: TagManagementCardProps) {
         }
         className="max-w-xl"
       >
-        <div className="flex gap-4 rounded-2xl border border-rose-400/20 bg-rose-400/10 p-4">
-          <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-rose-200" />
-          <div className="space-y-2 text-sm leading-6 text-rose-50">
-            <p>
-              You are about to delete <span className="font-medium">{repository}:{tag}</span>.
-            </p>
-            <p>The action is proxied server-side and resolved against the current manifest digest.</p>
-          </div>
+            <div className="flex gap-4 rounded-2xl border border-rose-400/20 bg-rose-400/10 p-4">
+              <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-rose-200" />
+              <div className="min-w-0 space-y-2 text-sm leading-6 text-rose-50">
+                <p className="break-words">
+                  You are about to delete <span className="break-all font-mono font-medium">{repository}:{tag}</span>.
+                </p>
+                <p>The action is proxied server-side and resolved against the current manifest digest.</p>
+              </div>
         </div>
 
         {deletePreviewQuery.isLoading ? (

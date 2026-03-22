@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { BulkCleanupPanel } from "@/components/repositories/bulk-cleanup-panel";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TagManagementCard } from "@/components/repositories/tag-management-card";
 import { cn } from "@/lib/utils";
@@ -88,6 +89,8 @@ export function RepositoryDetailClient({ repository }: RepositoryDetailClientPro
           </div>
         </CardContent>
       </Card>
+
+      <BulkCleanupPanel repository={repository} />
 
       {tagsQuery.isLoading ? (
         <div className="grid gap-4">

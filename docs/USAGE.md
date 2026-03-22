@@ -1,6 +1,6 @@
 # Usage Guide
 
-This document explains how to run and use the current version of `soara/registry-ui`.
+This document explains how to run and use the current version of `soaraid/registry-ui`.
 
 ## Before You Start
 
@@ -49,6 +49,61 @@ http://localhost:3000
 ```
 
 If app session auth is enabled, you will be redirected to `/login` first.
+
+## Docker Runtime
+
+This repository now includes:
+
+- `Dockerfile`
+- `.dockerignore`
+- `docker-compose.yml`
+- `docker-compose.example.yml`
+- `.env.docker.example`
+
+Basic image build:
+
+```bash
+docker build -t soaraid/registry-ui:local .
+```
+
+This project runs as a standalone UI container. It does not start Docker Registry itself.
+
+Create a Docker env file:
+
+```bash
+cp .env.docker.example .env
+```
+
+Then edit `.env` with the registry endpoint you want this UI to use.
+
+Local Compose run:
+
+```bash
+docker compose up --build
+```
+
+Useful `REGISTRY_URL` examples:
+
+```env
+REGISTRY_URL=http://host.docker.internal:5000
+REGISTRY_URL=http://registry:5000
+REGISTRY_URL=https://registry.example.com
+```
+
+Use `http://registry:5000` when this UI is joined to the same Docker network as a registry container named `registry`.
+
+Basic container run:
+
+```bash
+docker run --rm -p 3000:3000 \
+  -e REGISTRY_URL=http://host.docker.internal:5000 \
+  -e APP_AUTH_USERNAME=operator \
+  -e APP_AUTH_PASSWORD=change-me \
+  -e APP_SESSION_SECRET=replace-with-a-long-random-secret \
+  soaraid/registry-ui:local
+```
+
+Published-image usage is represented by `docker-compose.example.yml`, which is intended to be copied into another project such as `soaraid/soara-hub`.
 
 ## Authentication Modes
 
@@ -136,6 +191,8 @@ What it does now:
 - Opens a manifest inspector dialog with raw JSON, digest, layers, and platform details
 - Shows delete impact before any destructive action
 - Blocks delete when multiple tags share the same manifest digest
+- Includes a bulk cleanup panel with keep-last, prefix, and regex filters
+- Allows batch delete only for singleton-digest candidates
 
 ### Settings
 
@@ -146,6 +203,7 @@ What it does:
 - Documents the environment variables used by the proxy layer
 - Shows whether app session auth is enabled
 - Shows current registry runtime mode
+- Lets you run a live registry connectivity test
 
 ## Proxy Behavior
 
@@ -154,10 +212,13 @@ The UI talks to the registry through Next.js Route Handlers, not directly from t
 Current routes:
 
 - `GET /api/registry/catalog`
+- `GET /api/registry/health`
 - `GET /api/registry/tags?repository=<name>`
 - `GET /api/registry/manifests?repository=<name>&reference=<tag-or-digest>`
 - `GET /api/registry/tag?repository=<name>&tag=<tag>`
 - `DELETE /api/registry/tag?repository=<name>&tag=<tag>&confirmed=true`
+- `POST /api/registry/cleanup/preview`
+- `POST /api/registry/cleanup/execute`
 - `POST /api/auth/login`
 - `POST /api/auth/logout`
 
@@ -185,6 +246,23 @@ Current product behavior:
 - the UI previews the affected digest and tags first
 - the UI blocks deletion for shared-digest tags
 - only singleton-digest delete is allowed
+
+## Bulk Cleanup Behavior
+
+The repository detail page now includes a batch cleanup workflow.
+
+Supported preview inputs:
+
+- keep last `N` tags by natural descending tag name
+- optional prefix filter
+- optional regex filter
+
+Current product behavior:
+
+- preview is always generated before execution
+- matched tags are split into kept, deletable, and blocked groups
+- only singleton-digest candidates can be deleted
+- blocked tags remain untouched during execution
 
 ## Troubleshooting
 
@@ -237,15 +315,12 @@ What it means:
 
 Current product behavior:
 
-- `soara/registry-ui` blocks that delete on purpose
+- `soaraid/registry-ui` blocks that delete on purpose
 
 ## Current Gaps
 
 Not implemented yet:
 
-- Docker packaging files
-- Registry connection test action
-- Bulk cleanup workflows
 - Automated tests
 - OSS release workflow files
 

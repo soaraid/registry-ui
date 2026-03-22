@@ -23,10 +23,11 @@ async function fetchRepositoryTags(repository: string) {
   return (await response.json()) as RepositoryTagsPayload;
 }
 
-export function useRepositoryTags(repository: string) {
+export function useRepositoryTags(repository: string, enabled = true) {
   return useQuery({
     queryKey: ["registry", "repository", repository, "tags"],
     queryFn: () => fetchRepositoryTags(repository),
     staleTime: 15_000,
+    enabled,
   });
 }
