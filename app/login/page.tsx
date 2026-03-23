@@ -29,7 +29,11 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           </Badge>
           <div className="space-y-4">
             <div className="inline-flex">
-              <BrandLockup brandName={branding.brandName} productName={branding.productName} />
+              <BrandLockup
+                brandName={branding.brandName}
+                productName={branding.productName}
+                logoUrl={branding.logoUrl}
+              />
             </div>
             <h1 className="text-4xl font-semibold tracking-tight md:text-5xl">
               Manage and inspect your custom registry with a simpler UI.

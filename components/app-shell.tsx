@@ -31,7 +31,11 @@ export function AppShell({ branding, children }: AppShellProps) {
         <aside className="hidden w-[300px] shrink-0 pr-6 lg:block">
           <div className="shell-panel sticky top-6 flex h-[calc(100vh-3rem)] flex-col overflow-hidden rounded-[28px] p-5">
             <div className="mb-8">
-              <BrandLockup brandName={branding.brandName} productName={branding.productName} />
+              <BrandLockup
+                brandName={branding.brandName}
+                productName={branding.productName}
+                logoUrl={branding.logoUrl}
+              />
             </div>
 
             <div className="mb-6">
@@ -68,7 +72,12 @@ export function AppShell({ branding, children }: AppShellProps) {
           <div className="mb-4 space-y-4 lg:hidden">
             <div className="shell-panel rounded-[28px] p-5">
               <div className="flex items-center justify-between gap-4">
-                <BrandLockup brandName={branding.brandName} productName={branding.productName} compact />
+                <BrandLockup
+                  brandName={branding.brandName}
+                  productName={branding.productName}
+                  logoUrl={branding.logoUrl}
+                  compact
+                />
                 <Badge className="border-emerald-300/60 bg-emerald-50 text-emerald-900 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-200">
                   Custom registry UI
                 </Badge>

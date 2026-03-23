@@ -19,6 +19,7 @@ export interface AppBrandEnv {
   brandName: string;
   productName: string;
   displayName: string;
+  logoUrl: string;
 }
 
 function trimTrailingSlash(value: string) {
@@ -67,10 +68,12 @@ export function getAppAuthEnv(): AppAuthEnv {
 export function getAppBrandEnv(): AppBrandEnv {
   const brandName = process.env.APP_BRAND_NAME?.trim() || "Soara";
   const productName = process.env.APP_PRODUCT_NAME?.trim() || "Registry UI";
+  const logoUrl = process.env.APP_LOGO_URL?.trim() || "/brand/logo.png";
 
   return {
     brandName,
     productName,
     displayName: `${brandName} ${productName}`.trim(),
+    logoUrl,
   };
 }

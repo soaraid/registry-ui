@@ -32,9 +32,9 @@ export const metadata: Metadata = {
   title: branding.displayName,
   description: "Modern Docker Registry UI built with Next.js 15 and Shadcn UI patterns.",
   icons: {
-    icon: "/brand/logo.png",
-    apple: "/brand/logo.png",
-    shortcut: "/brand/logo.png",
+    icon: branding.logoUrl,
+    apple: branding.logoUrl,
+    shortcut: branding.logoUrl,
   },
 };
 

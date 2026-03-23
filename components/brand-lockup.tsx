@@ -1,9 +1,9 @@
 import { cn } from "@/lib/utils";
-import Image from "next/image";
 
 interface BrandLockupProps {
   brandName: string;
   productName: string;
+  logoUrl: string;
   compact?: boolean;
   className?: string;
 }
@@ -11,6 +11,7 @@ interface BrandLockupProps {
 export function BrandLockup({
   brandName,
   productName,
+  logoUrl,
   compact = false,
   className,
 }: BrandLockupProps) {
@@ -22,13 +23,12 @@ export function BrandLockup({
           compact ? "h-12 w-12" : "h-14 w-14",
         )}
       >
-        <Image
-          src="/brand/logo.png"
+        <img
+          src={logoUrl}
           alt={`${brandName} logo`}
-          fill
-          sizes={compact ? "48px" : "56px"}
-          className="object-contain p-1.5"
-          priority
+          className="h-full w-full object-cover"
+          loading="eager"
+          decoding="async"
         />
       </div>
       <div className="min-w-0">
