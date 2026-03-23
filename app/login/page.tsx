@@ -1,9 +1,8 @@
-import { ShieldCheck } from "lucide-react";
-
+import { BrandLockup } from "@/components/brand-lockup";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LoginForm } from "@/components/auth/login-form";
 import { Badge } from "@/components/ui/badge";
-import { getAppAuthEnv } from "@/lib/env";
+import { getAppAuthEnv, getAppBrandEnv } from "@/lib/env";
 
 interface LoginPageProps {
   searchParams: Promise<{
@@ -13,6 +12,7 @@ interface LoginPageProps {
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const authEnv = getAppAuthEnv();
+  const branding = getAppBrandEnv();
   const resolvedSearchParams = await searchParams;
 
   return (
@@ -28,8 +28,8 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             Private registry access
           </Badge>
           <div className="space-y-4">
-            <div className="soft-panel inline-flex rounded-2xl p-4">
-              <ShieldCheck className="h-7 w-7 text-emerald-700 dark:text-emerald-300" />
+            <div className="inline-flex">
+              <BrandLockup brandName={branding.brandName} productName={branding.productName} />
             </div>
             <h1 className="text-4xl font-semibold tracking-tight md:text-5xl">
               Manage and inspect your custom registry with a simpler UI.

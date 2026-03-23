@@ -2,9 +2,9 @@
 
 import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import { ShieldCheck } from "lucide-react";
 
 import { LogoutButton } from "@/components/auth/logout-button";
+import { BrandLockup } from "@/components/brand-lockup";
 import { SidebarNav } from "@/components/sidebar-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Badge } from "@/components/ui/badge";
@@ -30,14 +30,8 @@ export function AppShell({ branding, children }: AppShellProps) {
       <div className="relative mx-auto flex min-h-screen max-w-[1600px] px-4 py-4 md:px-6 md:py-6">
         <aside className="hidden w-[300px] shrink-0 pr-6 lg:block">
           <div className="shell-panel sticky top-6 flex h-[calc(100vh-3rem)] flex-col overflow-hidden rounded-[28px] p-5">
-            <div className="mb-8 flex items-center justify-between">
-              <div>
-                <p className="text-xs uppercase tracking-[0.35em] text-muted-foreground">{branding.brandName}</p>
-                <h1 className="mt-2 text-2xl font-semibold tracking-tight">{branding.productName}</h1>
-              </div>
-              <div className="soft-panel rounded-2xl p-3">
-                <ShieldCheck className="h-5 w-5 text-emerald-700 dark:text-emerald-300" />
-              </div>
+            <div className="mb-8">
+              <BrandLockup brandName={branding.brandName} productName={branding.productName} />
             </div>
 
             <div className="mb-6">
@@ -74,10 +68,7 @@ export function AppShell({ branding, children }: AppShellProps) {
           <div className="mb-4 space-y-4 lg:hidden">
             <div className="shell-panel rounded-[28px] p-5">
               <div className="flex items-center justify-between gap-4">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.35em] text-muted-foreground">{branding.brandName}</p>
-                  <h1 className="mt-2 text-2xl font-semibold tracking-tight">{branding.productName}</h1>
-                </div>
+                <BrandLockup brandName={branding.brandName} productName={branding.productName} compact />
                 <Badge className="border-emerald-300/60 bg-emerald-50 text-emerald-900 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-200">
                   Custom registry UI
                 </Badge>

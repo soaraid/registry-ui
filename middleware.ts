@@ -3,11 +3,15 @@ import { NextResponse } from "next/server";
 
 import { isAppAuthEnabled, SESSION_COOKIE_NAME, verifySessionToken } from "@/lib/auth";
 
+const PUBLIC_FILE_PATTERN = /\.[^/]+$/;
+
 function isPublicPath(pathname: string) {
   return (
     pathname === "/login" ||
     pathname.startsWith("/api/auth/") ||
     pathname.startsWith("/_next/") ||
+    pathname.startsWith("/brand/") ||
+    PUBLIC_FILE_PATTERN.test(pathname) ||
     pathname === "/favicon.ico"
   );
 }
@@ -56,4 +60,3 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };
-
