@@ -36,6 +36,7 @@ APP_AUTH_PASSWORD=change-me
 APP_SESSION_SECRET=replace-with-a-long-random-secret
 APP_BRAND_NAME=Soara
 APP_PRODUCT_NAME=Registry UI
+APP_LOGO_URL=https://cdn.example.com/brand/registry-ui-logo.png
 ```
 
 Start the app:
@@ -163,10 +164,12 @@ The visible product text can be adjusted with runtime env vars:
 ```env
 APP_BRAND_NAME=Soara
 APP_PRODUCT_NAME=Registry UI
+APP_LOGO_URL=https://cdn.example.com/brand/registry-ui-logo.png
 ```
 
-Use these if you want to reuse the UI under another product name without changing the code. The copyright
-attribution remains fixed to Soara and links to `https://github.com/soaraid`.
+Use these if you want to reuse the UI under another product name without changing the code. `APP_LOGO_URL`
+can point to a hosted image outside the container, so downstream users do not need to add files into the project.
+The copyright attribution remains fixed to Soara and links to `https://github.com/soaraid`.
 
 ## What You Can Use Today
 

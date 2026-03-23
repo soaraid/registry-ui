@@ -20,3 +20,4 @@ services:
       APP_SESSION_SECRET: ${APP_SESSION_SECRET:-replace-with-a-long-random-secret}
       APP_BRAND_NAME: ${APP_BRAND_NAME:-Soara}
       APP_PRODUCT_NAME: ${APP_PRODUCT_NAME:-Registry UI}
+      APP_LOGO_URL: ${APP_LOGO_URL:-/brand/logo.png}

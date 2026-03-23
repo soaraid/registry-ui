@@ -52,6 +52,7 @@ APP_AUTH_PASSWORD=
 APP_SESSION_SECRET=
 APP_BRAND_NAME=Soara
 APP_PRODUCT_NAME=Registry UI
+APP_LOGO_URL=https://cdn.example.com/brand/registry-ui-logo.png
 ```
 
 4. Start the development server:
@@ -166,6 +167,12 @@ Docker Hub style usage is shown in [docker-compose.example.yml](./docker-compose
 
 - Optional
 - Controls the product title shown in the shell and page metadata
+
+`APP_LOGO_URL`
+
+- Optional
+- Controls the logo image shown in the shell, login page, and app icon metadata
+- Can be a full hosted URL or a local public path such as `/brand/logo.png`
 
 App login protection is enabled only when all three `APP_AUTH_*` values are present.
 
