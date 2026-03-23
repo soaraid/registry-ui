@@ -50,7 +50,7 @@ export function RepositoryDetailClient({ repository }: RepositoryDetailClientPro
         </div>
       </div>
 
-      <Card className="border-white/10 bg-white/[0.03]">
+      <Card>
         <CardHeader className="gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <CardDescription>Tag inventory</CardDescription>
@@ -77,10 +77,10 @@ export function RepositoryDetailClient({ repository }: RepositoryDetailClientPro
         </CardContent>
       </Card>
 
-      <Card className="border-amber-400/20 bg-amber-400/10">
+      <Card className="status-warning">
         <CardContent className="flex gap-4 p-6">
-          <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-amber-200" />
-          <div className="space-y-2 text-sm leading-6 text-amber-50">
+          <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-amber-700 dark:text-amber-200" />
+          <div className="space-y-2 text-sm leading-6">
             <p className="font-medium">Registry-safe delete policy</p>
             <p>
               Plain Docker Registry deletes manifests by digest, not tags. If multiple tags share one digest, removing
@@ -98,8 +98,8 @@ export function RepositoryDetailClient({ repository }: RepositoryDetailClientPro
           <Skeleton className="h-[280px] w-full" />
         </div>
       ) : tagsQuery.isError ? (
-        <Card className="border-rose-400/20 bg-rose-400/10">
-          <CardContent className="p-6 text-sm text-rose-50">{(tagsQuery.error as Error).message}</CardContent>
+        <Card className="status-danger">
+          <CardContent className="p-6 text-sm">{(tagsQuery.error as Error).message}</CardContent>
         </Card>
       ) : filteredTags.length === 0 ? (
         <Card>

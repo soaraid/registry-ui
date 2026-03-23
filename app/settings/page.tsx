@@ -45,17 +45,17 @@ export default function SettingsPage() {
           <CardTitle>Runtime status</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4 md:grid-cols-3">
-          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+          <div className="soft-panel rounded-2xl p-4">
             <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Registry host</p>
             <p className="mt-2 text-sm text-foreground">{resolvedConnection?.host ?? "Not configured"}</p>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+          <div className="soft-panel rounded-2xl p-4">
             <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Auth mode</p>
             <p className="mt-2 text-sm capitalize text-foreground">
               {resolvedConnection?.authMode ?? "Unavailable until env is set"}
             </p>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+          <div className="soft-panel rounded-2xl p-4">
             <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">App session auth</p>
             <p className="mt-2 text-sm text-foreground">{appAuthEnv.enabled ? "Enabled" : "Disabled"}</p>
           </div>

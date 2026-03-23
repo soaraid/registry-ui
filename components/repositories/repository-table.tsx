@@ -91,9 +91,7 @@ export function RepositoryTable() {
             <Skeleton className="h-12 w-full" />
           </div>
         ) : catalogQuery.isError ? (
-          <div className="rounded-2xl border border-rose-400/20 bg-rose-400/10 p-4 text-sm text-rose-100">
-            {(catalogQuery.error as Error).message}
-          </div>
+          <div className="status-danger rounded-2xl p-4 text-sm">{(catalogQuery.error as Error).message}</div>
         ) : (
           <Table>
             <TableHeader>
@@ -109,7 +107,7 @@ export function RepositoryTable() {
                   <TableRow key={repository}>
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        <span className="rounded-xl border border-white/10 bg-white/[0.04] p-2">
+                        <span className="soft-panel rounded-xl p-2">
                           <Box className="h-4 w-4 text-muted-foreground" />
                         </span>
                         <div>
@@ -124,7 +122,7 @@ export function RepositoryTable() {
                     <TableCell className="text-right">
                       <Link
                         href={buildRepositoryPagePath(repository)}
-                        className="inline-flex items-center gap-2 text-sm text-foreground transition-colors hover:text-white"
+                        className="inline-flex items-center gap-2 text-sm text-foreground transition-colors hover:text-foreground/80"
                       >
                         Open repository
                         <ArrowUpRight className="h-4 w-4" />

@@ -56,9 +56,9 @@ export function LoginForm({ authEnabled, defaultUsername, nextPath = "/" }: Logi
   }
 
   return (
-    <Card className="w-full max-w-md border-white/10 bg-black/35 shadow-glow backdrop-blur-2xl">
+    <Card className="w-full max-w-md bg-card/85 shadow-glow backdrop-blur-2xl">
       <CardHeader>
-        <CardDescription className="flex items-center gap-2 text-emerald-200">
+        <CardDescription className="flex items-center gap-2 text-emerald-700 dark:text-emerald-200">
           <LockKeyhole className="h-4 w-4" />
           Session sign-in
         </CardDescription>
@@ -92,11 +92,7 @@ export function LoginForm({ authEnabled, defaultUsername, nextPath = "/" }: Logi
             />
           </div>
 
-          {errorMessage ? (
-            <div className="rounded-2xl border border-rose-400/20 bg-rose-400/10 p-4 text-sm text-rose-50">
-              {errorMessage}
-            </div>
-          ) : null}
+          {errorMessage ? <div className="status-danger rounded-2xl p-4 text-sm">{errorMessage}</div> : null}
 
           <Button className="w-full gap-2" type="submit" disabled={isPending}>
             {isPending ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />}
@@ -104,7 +100,7 @@ export function LoginForm({ authEnabled, defaultUsername, nextPath = "/" }: Logi
           </Button>
         </form>
 
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm leading-6 text-muted-foreground">
+        <div className="soft-panel rounded-2xl p-4 text-sm leading-6 text-muted-foreground">
           This app currently uses one env-configured account. It is meant to protect access to the UI while
           keeping registry browsing and maintenance easier from the browser.
         </div>

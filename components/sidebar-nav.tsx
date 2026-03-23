@@ -42,16 +42,16 @@ export function SidebarNav() {
             className={cn(
               "group flex items-start gap-3 rounded-2xl border px-4 py-3 transition-all duration-200",
               isActive
-                ? "border-white/10 bg-white/[0.08] text-foreground shadow-[0_0_0_1px_rgba(255,255,255,0.06)]"
-                : "border-transparent text-muted-foreground hover:border-white/10 hover:bg-white/[0.04] hover:text-foreground",
+                ? "border-border/70 bg-accent/75 text-foreground shadow-[0_0_0_1px_hsl(var(--border)/0.55)]"
+                : "border-transparent text-muted-foreground hover:border-border/70 hover:bg-accent/55 hover:text-foreground",
             )}
           >
             <span
               className={cn(
                 "mt-0.5 rounded-xl border p-2 transition-colors",
                 isActive
-                  ? "border-white/10 bg-white/10 text-foreground"
-                  : "border-white/5 bg-white/[0.03] text-muted-foreground group-hover:text-foreground",
+                  ? "border-border/70 bg-card/85 text-foreground"
+                  : "border-border/60 bg-card/70 text-muted-foreground group-hover:text-foreground",
               )}
             >
               <item.icon className="h-4 w-4" />
@@ -66,4 +66,3 @@ export function SidebarNav() {
     </nav>
   );
 }
-

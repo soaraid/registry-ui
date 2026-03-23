@@ -28,7 +28,7 @@ function SummaryCard({
   icon: ComponentType<{ className?: string }>;
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+    <div className="soft-panel rounded-2xl p-4">
       <div className="mb-3 flex items-center gap-2 text-sm text-muted-foreground">
         <Icon className="h-4 w-4" />
         {label}
@@ -130,7 +130,7 @@ export function BulkCleanupPanel({ repository }: BulkCleanupPanelProps) {
 
   return (
     <>
-      <Card className="border-white/10 bg-white/[0.03]">
+      <Card>
         <CardHeader className="gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <CardDescription>Batch tag cleanup</CardDescription>
@@ -182,7 +182,7 @@ export function BulkCleanupPanel({ repository }: BulkCleanupPanelProps) {
             </div>
           </form>
 
-          <div className="rounded-2xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm leading-6 text-amber-50">
+          <div className="status-warning rounded-2xl p-4 text-sm leading-6">
             The keep-last rule uses natural descending tag name order. Tags that share a digest are always blocked from
             batch deletion.
           </div>
@@ -196,11 +196,7 @@ export function BulkCleanupPanel({ repository }: BulkCleanupPanelProps) {
             </div>
           ) : null}
 
-          {previewError ? (
-            <div className="rounded-2xl border border-rose-400/20 bg-rose-400/10 p-4 text-sm text-rose-50">
-              {previewError}
-            </div>
-          ) : null}
+          {previewError ? <div className="status-danger rounded-2xl p-4 text-sm">{previewError}</div> : null}
 
           {preview ? (
             <div className="space-y-6">
@@ -219,7 +215,7 @@ export function BulkCleanupPanel({ repository }: BulkCleanupPanelProps) {
               </div>
 
               <div className="grid gap-4 xl:grid-cols-3">
-                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                <div className="soft-panel rounded-2xl p-4">
                   <p className="mb-3 text-sm font-medium text-foreground">Kept tags</p>
                   <div className="flex flex-wrap gap-2">
                     {preview.keptTags.length ? (
@@ -230,30 +226,36 @@ export function BulkCleanupPanel({ repository }: BulkCleanupPanelProps) {
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/10 p-4">
-                  <p className="mb-3 text-sm font-medium text-emerald-50">Safe deletions</p>
+                <div className="status-success rounded-2xl p-4">
+                  <p className="mb-3 text-sm font-medium">Safe deletions</p>
                   <div className="space-y-2">
                     {preview.deletable.length ? (
                       preview.deletable.map((item) => (
-                        <div key={item.tag} className="rounded-xl border border-emerald-400/20 bg-black/10 px-3 py-2">
-                          <p className="text-sm font-medium text-emerald-50">{item.tag}</p>
-                          <p className="mt-1 break-all font-mono text-xs text-emerald-100/80">{item.digest}</p>
+                        <div
+                          key={item.tag}
+                          className="rounded-xl border border-emerald-300/60 bg-white/70 px-3 py-2 dark:border-emerald-400/20 dark:bg-black/10"
+                        >
+                          <p className="text-sm font-medium text-emerald-950 dark:text-emerald-50">{item.tag}</p>
+                          <p className="mt-1 break-all font-mono text-xs text-emerald-800/80 dark:text-emerald-100/80">{item.digest}</p>
                         </div>
                       ))
                     ) : (
-                      <span className="text-sm text-emerald-100/80">No safe deletions for this preview.</span>
+                      <span className="text-sm text-emerald-800/80 dark:text-emerald-100/80">No safe deletions for this preview.</span>
                     )}
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-amber-400/20 bg-amber-400/10 p-4">
-                  <p className="mb-3 text-sm font-medium text-amber-50">Blocked tags</p>
+                <div className="status-warning rounded-2xl p-4">
+                  <p className="mb-3 text-sm font-medium">Blocked tags</p>
                   <div className="space-y-2">
                     {preview.blocked.length ? (
                       preview.blocked.map((item) => (
-                        <div key={`${item.tag}-${item.digest ?? "no-digest"}`} className="rounded-xl border border-amber-400/20 bg-black/10 px-3 py-2">
-                          <p className="text-sm font-medium text-amber-50">{item.tag}</p>
-                          <p className="mt-1 text-xs text-amber-100/80">{item.reason}</p>
+                        <div
+                          key={`${item.tag}-${item.digest ?? "no-digest"}`}
+                          className="rounded-xl border border-amber-300/60 bg-white/70 px-3 py-2 dark:border-amber-400/20 dark:bg-black/10"
+                        >
+                          <p className="text-sm font-medium text-amber-950 dark:text-amber-50">{item.tag}</p>
+                          <p className="mt-1 text-xs text-amber-800/80 dark:text-amber-100/80">{item.reason}</p>
                           {item.relatedTags.length ? (
                             <div className="mt-2 flex flex-wrap gap-1">
                               {item.relatedTags.map((relatedTag) => (
@@ -266,13 +268,13 @@ export function BulkCleanupPanel({ repository }: BulkCleanupPanelProps) {
                         </div>
                       ))
                     ) : (
-                      <span className="text-sm text-amber-100/80">No blocked tags in this preview.</span>
+                      <span className="text-sm text-amber-800/80 dark:text-amber-100/80">No blocked tags in this preview.</span>
                     )}
                   </div>
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+              <div className="soft-panel flex flex-wrap items-center justify-between gap-4 rounded-2xl p-4">
                 <div className="space-y-1 text-sm text-muted-foreground">
                   <p>Preview generated at {new Date(preview.checkedAt).toLocaleString()}.</p>
                   <p>Only safe singleton-digest tags can be deleted from this preview.</p>
@@ -311,9 +313,9 @@ export function BulkCleanupPanel({ repository }: BulkCleanupPanelProps) {
       >
         {preview ? (
           <div className="space-y-4">
-            <div className="flex gap-4 rounded-2xl border border-rose-400/20 bg-rose-400/10 p-4">
-              <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-rose-200" />
-              <div className="space-y-2 text-sm leading-6 text-rose-50">
+            <div className="status-danger flex gap-4 rounded-2xl p-4">
+              <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-rose-700 dark:text-rose-200" />
+              <div className="space-y-2 text-sm leading-6">
                 <p>
                   This cleanup will delete <span className="font-medium">{preview.summary.deletableCount}</span> safe
                   tag{preview.summary.deletableCount === 1 ? "" : "s"}.
@@ -322,7 +324,7 @@ export function BulkCleanupPanel({ repository }: BulkCleanupPanelProps) {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <div className="soft-panel rounded-2xl p-4">
               <p className="mb-3 text-sm font-medium text-foreground">Tags to delete</p>
               <div className="flex flex-wrap gap-2">
                 {preview.deletable.map((item) => (
@@ -331,11 +333,7 @@ export function BulkCleanupPanel({ repository }: BulkCleanupPanelProps) {
               </div>
             </div>
 
-            {executeMutation.isError ? (
-              <div className="rounded-2xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-50">
-                {(executeMutation.error as Error).message}
-              </div>
-            ) : null}
+            {executeMutation.isError ? <div className="status-warning rounded-2xl p-4 text-sm">{(executeMutation.error as Error).message}</div> : null}
           </div>
         ) : null}
       </Dialog>

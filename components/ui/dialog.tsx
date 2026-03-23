@@ -63,7 +63,7 @@ export function Dialog({
       <button
         type="button"
         aria-label="Close dialog"
-        className="fixed inset-0 bg-black/70 backdrop-blur-sm"
+        className="fixed inset-0 bg-[hsl(var(--overlay)/0.58)] backdrop-blur-sm"
         onClick={() => onOpenChange(false)}
       />
       <div
@@ -71,11 +71,11 @@ export function Dialog({
         aria-modal="true"
         aria-labelledby="dialog-title"
         className={cn(
-          "relative z-10 my-auto flex max-h-[90vh] w-full max-w-4xl min-w-0 flex-col overflow-hidden rounded-[28px] border border-white/10 bg-zinc-950/95 shadow-glow",
+          "relative z-10 my-auto flex max-h-[90vh] w-full max-w-4xl min-w-0 flex-col overflow-hidden rounded-[28px] border border-border/70 bg-card/95 shadow-glow",
           className,
         )}
       >
-        <div className="flex items-start justify-between gap-4 border-b border-white/10 px-6 py-5">
+        <div className="flex items-start justify-between gap-4 border-b border-border/70 px-6 py-5">
           <div className="min-w-0 flex-1">
             <h3 id="dialog-title" className="break-all text-xl font-semibold tracking-tight">
               {title}
@@ -86,14 +86,14 @@ export function Dialog({
           </div>
           <button
             type="button"
-            className="shrink-0 rounded-xl border border-white/10 bg-white/5 p-2 text-muted-foreground transition-colors hover:bg-white/10 hover:text-foreground"
+            className="shrink-0 rounded-xl border border-border/70 bg-card/80 p-2 text-muted-foreground transition-colors hover:bg-accent/70 hover:text-foreground"
             onClick={() => onOpenChange(false)}
           >
             <X className="h-4 w-4" />
           </button>
         </div>
         <div className="min-h-0 min-w-0 flex-1 overflow-auto px-6 py-5">{children}</div>
-        {footer ? <div className="border-t border-white/10 px-6 py-4">{footer}</div> : null}
+        {footer ? <div className="border-t border-border/70 px-6 py-4">{footer}</div> : null}
       </div>
     </div>,
     document.body,

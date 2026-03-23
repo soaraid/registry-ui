@@ -56,7 +56,7 @@ function DetailRow({
   valueClassName?: string;
 }) {
   return (
-    <div className="min-w-0 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+    <div className="soft-panel min-w-0 rounded-2xl p-4">
       <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">{label}</p>
       <p className={cn("mt-2 min-w-0 break-all text-sm text-foreground", valueClassName)}>{value}</p>
     </div>
@@ -104,7 +104,7 @@ export function TagManagementCard({ repository, tag }: TagManagementCardProps) {
 
   return (
     <>
-      <Card ref={ref} className="border-white/10 bg-white/[0.03] transition-transform duration-200 hover:-translate-y-0.5">
+      <Card ref={ref} className="transition-transform duration-200 hover:-translate-y-0.5">
         <CardHeader className="gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="space-y-2">
             <Badge className="w-fit bg-white/8">{tag}</Badge>
@@ -135,7 +135,7 @@ export function TagManagementCard({ repository, tag }: TagManagementCardProps) {
           />
 
           <div className="grid gap-4 xl:grid-cols-3">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <div className="soft-panel rounded-2xl p-4">
               <div className="mb-3 flex items-center gap-2 text-sm text-muted-foreground">
                 <MonitorCog className="h-4 w-4" />
                 Platform
@@ -163,7 +163,7 @@ export function TagManagementCard({ repository, tag }: TagManagementCardProps) {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <div className="soft-panel rounded-2xl p-4">
               <div className="mb-3 flex items-center gap-2 text-sm text-muted-foreground">
                 <Layers3 className="h-4 w-4" />
                 Layers
@@ -178,7 +178,7 @@ export function TagManagementCard({ repository, tag }: TagManagementCardProps) {
               )}
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <div className="soft-panel rounded-2xl p-4">
               <div className="mb-3 flex items-center gap-2 text-sm text-muted-foreground">
                 <Boxes className="h-4 w-4" />
                 Manifest type
@@ -194,11 +194,7 @@ export function TagManagementCard({ repository, tag }: TagManagementCardProps) {
             </div>
           </div>
 
-          {manifestQuery.isError ? (
-            <div className="rounded-2xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-50">
-              {(manifestQuery.error as Error).message}
-            </div>
-          ) : null}
+          {manifestQuery.isError ? <div className="status-warning rounded-2xl p-4 text-sm">{(manifestQuery.error as Error).message}</div> : null}
         </CardContent>
       </Card>
 
@@ -221,9 +217,7 @@ export function TagManagementCard({ repository, tag }: TagManagementCardProps) {
             <Skeleton className="h-72 w-full" />
           </div>
         ) : manifestQuery.isError ? (
-          <div className="rounded-2xl border border-rose-400/20 bg-rose-400/10 p-4 text-sm text-rose-50">
-            {(manifestQuery.error as Error).message}
-          </div>
+          <div className="status-danger rounded-2xl p-4 text-sm">{(manifestQuery.error as Error).message}</div>
         ) : manifest ? (
           <div className="space-y-6">
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -247,7 +241,7 @@ export function TagManagementCard({ repository, tag }: TagManagementCardProps) {
                   {manifest.layers.map((layer) => (
                     <div
                       key={layer.digest}
-                      className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm"
+                      className="soft-panel rounded-2xl px-4 py-3 text-sm"
                     >
                       <p className="break-all font-mono text-xs text-foreground">{layer.digest}</p>
                       <p className="mt-2 break-all text-xs text-muted-foreground">
@@ -266,7 +260,7 @@ export function TagManagementCard({ repository, tag }: TagManagementCardProps) {
                   {manifest.manifests.map((item) => (
                     <div
                       key={item.digest}
-                      className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm"
+                      className="soft-panel rounded-2xl px-4 py-3 text-sm"
                     >
                       <p className="break-all font-medium">
                         {item.architecture ?? "unknown"} / {item.os ?? "unknown"}
@@ -280,7 +274,7 @@ export function TagManagementCard({ repository, tag }: TagManagementCardProps) {
 
             <div className="space-y-3">
               <p className="text-sm font-medium text-foreground">Raw JSON</p>
-              <pre className="max-h-[420px] overflow-auto rounded-2xl border border-white/10 bg-zinc-950/90 p-4 text-xs leading-6 text-zinc-100">
+              <pre className="code-panel max-h-[420px] overflow-auto rounded-2xl p-4 text-xs leading-6 text-[hsl(var(--code-foreground))]">
                 {JSON.stringify(manifest.raw, null, 2)}
               </pre>
             </div>
@@ -315,9 +309,9 @@ export function TagManagementCard({ repository, tag }: TagManagementCardProps) {
         }
         className="max-w-xl"
       >
-            <div className="flex gap-4 rounded-2xl border border-rose-400/20 bg-rose-400/10 p-4">
-              <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-rose-200" />
-              <div className="min-w-0 space-y-2 text-sm leading-6 text-rose-50">
+            <div className="status-danger flex gap-4 rounded-2xl p-4">
+              <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-rose-700 dark:text-rose-200" />
+              <div className="min-w-0 space-y-2 text-sm leading-6">
                 <p className="break-words">
                   You are about to delete <span className="break-all font-mono font-medium">{repository}:{tag}</span>.
                 </p>
@@ -331,12 +325,10 @@ export function TagManagementCard({ repository, tag }: TagManagementCardProps) {
             <Skeleton className="h-10 w-full" />
           </div>
         ) : deletePreviewQuery.isError ? (
-          <div className="mt-4 rounded-2xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-50">
-            {(deletePreviewQuery.error as Error).message}
-          </div>
+          <div className="status-warning mt-4 rounded-2xl p-4 text-sm">{(deletePreviewQuery.error as Error).message}</div>
         ) : deletePreview ? (
           <div className="mt-4 space-y-4">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <div className="soft-panel rounded-2xl p-4">
               <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Manifest digest</p>
               <p className="mt-2 break-all font-mono text-xs text-foreground">{deletePreview.digest}</p>
             </div>
@@ -344,14 +336,14 @@ export function TagManagementCard({ repository, tag }: TagManagementCardProps) {
             <div
               className={`rounded-2xl border p-4 text-sm leading-6 ${
                 multiTagDelete
-                  ? "border-rose-400/20 bg-rose-400/10 text-rose-50"
-                  : "border-amber-400/20 bg-amber-400/10 text-amber-50"
+                  ? "status-danger"
+                  : "status-warning"
               }`}
             >
               <p>{deletePreview.warning}</p>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <div className="soft-panel rounded-2xl p-4">
               <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Affected tags</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {affectedTags.map((affectedTag) => (
@@ -363,7 +355,7 @@ export function TagManagementCard({ repository, tag }: TagManagementCardProps) {
             </div>
 
             {multiTagDelete ? (
-              <div className="rounded-2xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm leading-6 text-amber-50">
+              <div className="status-warning rounded-2xl p-4 text-sm leading-6">
                 This UI blocks deletes for shared digests in plain Docker Registry mode. If you need to retire only one
                 tag, push a new manifest for the tag you want to keep or use a registry that supports native tag deletion.
               </div>
@@ -372,9 +364,7 @@ export function TagManagementCard({ repository, tag }: TagManagementCardProps) {
         ) : null}
 
         {deleteMutation.isError ? (
-          <div className="mt-4 rounded-2xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-50">
-            {(deleteMutation.error as Error).message}
-          </div>
+          <div className="status-warning mt-4 rounded-2xl p-4 text-sm">{(deleteMutation.error as Error).message}</div>
         ) : null}
       </Dialog>
     </>

@@ -23,7 +23,7 @@ function SummaryCard({
   icon: ComponentType<{ className?: string }>;
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+    <div className="soft-panel rounded-2xl p-4">
       <div className="mb-3 flex items-center gap-2 text-sm text-muted-foreground">
         <Icon className="h-4 w-4" />
         {label}
@@ -60,13 +60,19 @@ export function DashboardOverview({ branding }: { branding: AppBrandEnv }) {
   return (
     <div className="space-y-6">
       <section className="grid gap-4 xl:grid-cols-[1.2fr_1fr]">
-        <Card className="overflow-hidden border-white/10 bg-gradient-to-br from-white/[0.08] via-white/[0.02] to-transparent">
+        <Card className="overflow-hidden bg-gradient-to-br from-card via-card/75 to-transparent">
           <CardHeader className="space-y-4">
             <div className="flex flex-wrap items-center gap-2">
               <Badge className="w-fit">{branding.displayName}</Badge>
               <Badge variant="outline">Custom registry dashboard</Badge>
               {health ? (
-                <Badge className={health.reachable ? "bg-emerald-400/10 text-emerald-200" : "bg-rose-400/10 text-rose-100"}>
+                <Badge
+                  className={
+                    health.reachable
+                      ? "border-emerald-300/60 bg-emerald-50 text-emerald-900 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-200"
+                      : "border-rose-300/60 bg-rose-50 text-rose-900 dark:border-rose-400/20 dark:bg-rose-400/10 dark:text-rose-100"
+                  }
+                >
                   {health.reachable ? "Registry reachable" : "Registry unreachable"}
                 </Badge>
               ) : null}
@@ -140,7 +146,7 @@ export function DashboardOverview({ branding }: { branding: AppBrandEnv }) {
               <Link
                 key={item.title}
                 href={item.href}
-                className="block rounded-2xl border border-white/10 bg-white/[0.03] p-4 transition-colors hover:bg-white/[0.05]"
+                className="soft-panel block rounded-2xl p-4 transition-colors hover:bg-accent/55"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
@@ -160,7 +166,7 @@ export function DashboardOverview({ branding }: { branding: AppBrandEnv }) {
             <CardTitle>Maintenance guardrails</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <div className="soft-panel rounded-2xl p-4">
               <div className="mb-3 flex items-center gap-2 text-sm text-muted-foreground">
                 <Wrench className="h-4 w-4" />
                 Plain Docker Registry rules
@@ -170,7 +176,7 @@ export function DashboardOverview({ branding }: { branding: AppBrandEnv }) {
                 they are protected from direct deletion in the UI.
               </p>
             </div>
-            <div className="rounded-2xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm leading-6 text-amber-50">
+            <div className="status-warning rounded-2xl p-4 text-sm leading-6">
               Bulk cleanup only executes singleton-digest candidates. Shared-digest tags are previewed as blocked and
               left untouched.
             </div>

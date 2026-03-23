@@ -46,7 +46,7 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)",
       },
       boxShadow: {
-        glow: "0 0 0 1px rgba(255,255,255,0.05), 0 24px 120px rgba(15,23,42,0.45)",
+        glow: "var(--shadow-glow)",
       },
       backgroundImage: {
         grain:
@@ -58,4 +58,3 @@ const config: Config = {
 };
 
 export default config;
-

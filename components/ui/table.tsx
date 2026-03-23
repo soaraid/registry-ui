@@ -33,7 +33,7 @@ const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTML
   ({ className, ...props }, ref) => (
     <tr
       ref={ref}
-      className={cn("transition-colors hover:bg-white/[0.03] data-[state=selected]:bg-white/[0.04]", className)}
+      className={cn("transition-colors hover:bg-accent/45 data-[state=selected]:bg-accent/60", className)}
       {...props}
     />
   ),
@@ -62,4 +62,3 @@ const TableCell = React.forwardRef<HTMLTableCellElement, React.TdHTMLAttributes<
 TableCell.displayName = "TableCell";
 
 export { Table, TableBody, TableCell, TableHead, TableHeader, TableRow };
-

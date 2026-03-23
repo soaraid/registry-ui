@@ -19,7 +19,7 @@ function HealthItem({
   icon: ComponentType<{ className?: string }>;
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+    <div className="soft-panel rounded-2xl p-4">
       <div className="mb-3 flex items-center gap-2 text-sm text-muted-foreground">
         <Icon className="h-4 w-4" />
         {label}
@@ -61,7 +61,13 @@ export function RegistryHealthPanel() {
         ) : health ? (
           <>
             <div className="flex flex-wrap gap-2">
-              <Badge className={health.reachable ? "bg-emerald-400/10 text-emerald-200" : "bg-rose-400/10 text-rose-100"}>
+              <Badge
+                className={
+                  health.reachable
+                    ? "border-emerald-300/60 bg-emerald-50 text-emerald-900 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-200"
+                    : "border-rose-300/60 bg-rose-50 text-rose-900 dark:border-rose-400/20 dark:bg-rose-400/10 dark:text-rose-100"
+                }
+              >
                 {health.reachable ? "Registry reachable" : "Registry unreachable"}
               </Badge>
               <Badge variant="outline">
@@ -81,25 +87,25 @@ export function RegistryHealthPanel() {
             </div>
 
             {health.catalogError ? (
-              <div className="rounded-2xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-50">
+              <div className="status-warning rounded-2xl p-4 text-sm">
                 Catalog probe warning: {health.catalogError}
               </div>
             ) : null}
 
             {health.error ? (
-              <div className="rounded-2xl border border-rose-400/20 bg-rose-400/10 p-4 text-sm text-rose-50">
+              <div className="status-danger rounded-2xl p-4 text-sm">
                 {health.error}
               </div>
             ) : null}
           </>
         ) : (
-          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm text-muted-foreground">
+          <div className="soft-panel rounded-2xl p-4 text-sm text-muted-foreground">
             No registry diagnostics available yet.
           </div>
         )}
 
         {healthQuery.isError && !health ? (
-          <div className="rounded-2xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-50">
+          <div className="status-warning rounded-2xl p-4 text-sm">
             <div className="flex items-center gap-2">
               <CircleAlert className="h-4 w-4" />
               Unable to run the registry connectivity test.
