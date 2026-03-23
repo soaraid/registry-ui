@@ -35,7 +35,7 @@ export function RepositoryDetailClient({ repository }: RepositoryDetailClientPro
           <Badge className="w-fit">Repository detail</Badge>
           <h2 className="text-3xl font-semibold tracking-tight">{repository}</h2>
           <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
-            Inspect manifests, copy pull commands, and remove stale tags through a server-proxied workflow.
+            Inspect manifests, copy pull commands, and safely clean up tags from one place.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">

@@ -15,6 +15,12 @@ export interface AppAuthEnv {
   sessionSecret?: string;
 }
 
+export interface AppBrandEnv {
+  brandName: string;
+  productName: string;
+  displayName: string;
+}
+
 function trimTrailingSlash(value: string) {
   return value.replace(/\/+$/, "");
 }
@@ -55,5 +61,16 @@ export function getAppAuthEnv(): AppAuthEnv {
     username,
     password,
     sessionSecret,
+  };
+}
+
+export function getAppBrandEnv(): AppBrandEnv {
+  const brandName = process.env.APP_BRAND_NAME?.trim() || "Soara";
+  const productName = process.env.APP_PRODUCT_NAME?.trim() || "Registry UI";
+
+  return {
+    brandName,
+    productName,
+    displayName: `${brandName} ${productName}`.trim(),
   };
 }

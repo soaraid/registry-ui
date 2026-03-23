@@ -15,3 +15,5 @@ services:
       APP_AUTH_USERNAME: operator
       APP_AUTH_PASSWORD: change-me
       APP_SESSION_SECRET: replace-with-a-long-random-secret
+      APP_BRAND_NAME: Soara
+      APP_PRODUCT_NAME: Registry UI

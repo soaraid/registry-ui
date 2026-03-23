@@ -34,6 +34,8 @@ REGISTRY_BEARER_TOKEN=
 APP_AUTH_USERNAME=operator
 APP_AUTH_PASSWORD=change-me
 APP_SESSION_SECRET=replace-with-a-long-random-secret
+APP_BRAND_NAME=Soara
+APP_PRODUCT_NAME=Registry UI
 ```
 
 Start the app:
@@ -153,6 +155,18 @@ Notes:
 - This is a single-user app login for now
 - It protects both the frontend pages and the proxied API routes
 - If the auth env vars are not fully configured, the app stays open
+
+## UI Branding
+
+The visible product text can be adjusted with runtime env vars:
+
+```env
+APP_BRAND_NAME=Soara
+APP_PRODUCT_NAME=Registry UI
+```
+
+Use these if you want to reuse the UI under another product name without changing the code. The copyright
+attribution remains fixed to Soara and links to `https://github.com/soaraid`.
 
 ## What You Can Use Today
 

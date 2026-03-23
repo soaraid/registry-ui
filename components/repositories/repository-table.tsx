@@ -126,7 +126,7 @@ export function RepositoryTable() {
                         href={buildRepositoryPagePath(repository)}
                         className="inline-flex items-center gap-2 text-sm text-foreground transition-colors hover:text-white"
                       >
-                        Manage
+                        Open repository
                         <ArrowUpRight className="h-4 w-4" />
                       </Link>
                     </TableCell>

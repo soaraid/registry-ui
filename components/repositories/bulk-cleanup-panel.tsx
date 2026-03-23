@@ -133,7 +133,7 @@ export function BulkCleanupPanel({ repository }: BulkCleanupPanelProps) {
       <Card className="border-white/10 bg-white/[0.03]">
         <CardHeader className="gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <CardDescription>Batch maintenance</CardDescription>
+            <CardDescription>Batch tag cleanup</CardDescription>
             <CardTitle>Safe bulk cleanup</CardTitle>
           </div>
           <Badge variant="outline">Singleton digests only</Badge>
@@ -183,8 +183,8 @@ export function BulkCleanupPanel({ repository }: BulkCleanupPanelProps) {
           </form>
 
           <div className="rounded-2xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm leading-6 text-amber-50">
-            Tags are sorted by natural descending tag name for the keep-last rule. Shared-digest tags are always blocked
-            from batch deletion.
+            The keep-last rule uses natural descending tag name order. Tags that share a digest are always blocked from
+            batch deletion.
           </div>
 
           {previewMutation.isPending ? (
@@ -225,7 +225,7 @@ export function BulkCleanupPanel({ repository }: BulkCleanupPanelProps) {
                     {preview.keptTags.length ? (
                       preview.keptTags.map((tag) => <Badge key={tag}>{tag}</Badge>)
                     ) : (
-                      <span className="text-sm text-muted-foreground">No tags are pinned by the keep-last rule.</span>
+                      <span className="text-sm text-muted-foreground">No tags were kept by the current keep-last rule.</span>
                     )}
                   </div>
                 </div>
@@ -275,7 +275,7 @@ export function BulkCleanupPanel({ repository }: BulkCleanupPanelProps) {
               <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                 <div className="space-y-1 text-sm text-muted-foreground">
                   <p>Preview generated at {new Date(preview.checkedAt).toLocaleString()}.</p>
-                  <p>Only safe singleton-digest candidates can be executed.</p>
+                  <p>Only safe singleton-digest tags can be deleted from this preview.</p>
                 </div>
                 <Button
                   variant="destructive"
@@ -295,7 +295,7 @@ export function BulkCleanupPanel({ repository }: BulkCleanupPanelProps) {
       <Dialog
         open={confirmOpen}
         onOpenChange={setConfirmOpen}
-        title="Execute bulk cleanup?"
+        title="Run bulk cleanup?"
         description="This will delete only the safe singleton-digest tags from the current preview."
         footer={
           <div className="flex items-center justify-end gap-3">
@@ -315,8 +315,8 @@ export function BulkCleanupPanel({ repository }: BulkCleanupPanelProps) {
               <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-rose-200" />
               <div className="space-y-2 text-sm leading-6 text-rose-50">
                 <p>
-                  The current preview will delete <span className="font-medium">{preview.summary.deletableCount}</span>{" "}
-                  safe tag{preview.summary.deletableCount === 1 ? "" : "s"}.
+                  This cleanup will delete <span className="font-medium">{preview.summary.deletableCount}</span> safe
+                  tag{preview.summary.deletableCount === 1 ? "" : "s"}.
                 </p>
                 <p>Blocked tags will remain untouched.</p>
               </div>

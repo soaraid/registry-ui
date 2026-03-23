@@ -7,13 +7,16 @@ import { ShieldCheck } from "lucide-react";
 import { LogoutButton } from "@/components/auth/logout-button";
 import { SidebarNav } from "@/components/sidebar-nav";
 import { Badge } from "@/components/ui/badge";
+import type { AppBrandEnv } from "@/lib/env";
 
 interface AppShellProps {
+  branding: AppBrandEnv;
   children: ReactNode;
 }
 
-export function AppShell({ children }: AppShellProps) {
+export function AppShell({ branding, children }: AppShellProps) {
   const pathname = usePathname();
+  const currentYear = new Date().getFullYear();
 
   if (pathname.startsWith("/login")) {
     return <>{children}</>;
@@ -28,8 +31,8 @@ export function AppShell({ children }: AppShellProps) {
           <div className="sticky top-6 flex h-[calc(100vh-3rem)] flex-col overflow-hidden rounded-[28px] border border-white/10 bg-black/30 p-5 shadow-glow backdrop-blur-2xl">
             <div className="mb-8 flex items-center justify-between">
               <div>
-                <p className="text-xs uppercase tracking-[0.35em] text-muted-foreground">Soara</p>
-                <h1 className="mt-2 text-2xl font-semibold tracking-tight">Registry UI</h1>
+                <p className="text-xs uppercase tracking-[0.35em] text-muted-foreground">{branding.brandName}</p>
+                <h1 className="mt-2 text-2xl font-semibold tracking-tight">{branding.productName}</h1>
               </div>
               <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
                 <ShieldCheck className="h-5 w-5 text-emerald-300" />
@@ -37,22 +40,28 @@ export function AppShell({ children }: AppShellProps) {
             </div>
 
             <div className="mb-6">
-              <Badge className="mb-3 w-fit bg-emerald-400/10 text-emerald-200">Docker V2 Proxy</Badge>
+              <Badge className="mb-3 w-fit bg-emerald-400/10 text-emerald-200">Custom registry UI</Badge>
               <p className="text-sm leading-6 text-muted-foreground">
-                A control surface for browsing, inspecting, and managing a private registry without
-                exposing the raw API to the browser.
+                A simpler UI for browsing, inspecting, and maintaining images in a custom registry
+                without exposing the raw API to the browser.
               </p>
             </div>
 
             <SidebarNav />
 
-            <div className="mt-auto rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-              <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Design Tone</p>
-              <p className="mt-2 text-sm text-foreground">Dark zinc surfaces, restrained glow, and fast operator workflows.</p>
-            </div>
-
-            <div className="mt-4">
+            <div className="mt-auto pt-6">
               <LogoutButton />
+              <p className="mt-4 px-1 text-[11px] leading-5 text-muted-foreground">
+                © {currentYear} Soara ·{" "}
+                <a
+                  href="https://github.com/soaraid"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="transition-colors hover:text-foreground"
+                >
+                  github.com/soaraid
+                </a>
+              </p>
             </div>
           </div>
         </aside>
@@ -62,10 +71,10 @@ export function AppShell({ children }: AppShellProps) {
             <div className="rounded-[28px] border border-white/10 bg-black/30 p-5 shadow-glow backdrop-blur-2xl">
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-xs uppercase tracking-[0.35em] text-muted-foreground">Soara</p>
-                  <h1 className="mt-2 text-2xl font-semibold tracking-tight">Registry UI</h1>
+                  <p className="text-xs uppercase tracking-[0.35em] text-muted-foreground">{branding.brandName}</p>
+                  <h1 className="mt-2 text-2xl font-semibold tracking-tight">{branding.productName}</h1>
                 </div>
-                <Badge className="bg-emerald-400/10 text-emerald-200">Docker V2 Proxy</Badge>
+                <Badge className="bg-emerald-400/10 text-emerald-200">Custom registry UI</Badge>
               </div>
             </div>
 
@@ -74,6 +83,17 @@ export function AppShell({ children }: AppShellProps) {
             </div>
             <div className="rounded-[28px] border border-white/10 bg-black/30 p-4 shadow-glow backdrop-blur-2xl">
               <LogoutButton />
+            </div>
+            <div className="px-1 text-[11px] text-muted-foreground">
+              © {currentYear} Soara ·{" "}
+              <a
+                href="https://github.com/soaraid"
+                target="_blank"
+                rel="noreferrer"
+                className="transition-colors hover:text-foreground"
+              >
+                github.com/soaraid
+              </a>
             </div>
           </div>
 

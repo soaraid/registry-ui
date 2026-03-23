@@ -50,6 +50,8 @@ REGISTRY_BEARER_TOKEN=
 APP_AUTH_USERNAME=
 APP_AUTH_PASSWORD=
 APP_SESSION_SECRET=
+APP_BRAND_NAME=Soara
+APP_PRODUCT_NAME=Registry UI
 ```
 
 4. Start the development server:
@@ -154,6 +156,16 @@ Docker Hub style usage is shown in [docker-compose.example.yml](./docker-compose
 
 - Optional
 - Secret used to sign the session cookie for login protection
+
+`APP_BRAND_NAME`
+
+- Optional
+- Controls the small brand text shown in the shell
+
+`APP_PRODUCT_NAME`
+
+- Optional
+- Controls the product title shown in the shell and page metadata
 
 App login protection is enabled only when all three `APP_AUTH_*` values are present.
 

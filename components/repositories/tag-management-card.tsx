@@ -206,7 +206,7 @@ export function TagManagementCard({ repository, tag }: TagManagementCardProps) {
         open={inspectorOpen}
         onOpenChange={setInspectorOpen}
         title={`Manifest inspector: ${tag}`}
-        description="Review the resolved manifest, digest, layers, and platform metadata before taking action."
+        description="Review the manifest, digest, layers, and platform details for this tag."
         footer={
           <div className="flex justify-end">
             <Button variant="outline" onClick={() => setInspectorOpen(false)}>
@@ -292,7 +292,7 @@ export function TagManagementCard({ repository, tag }: TagManagementCardProps) {
         open={confirmDeleteOpen}
         onOpenChange={setConfirmDeleteOpen}
         title={`Delete tag "${tag}"?`}
-        description="This removes the manifest reference from the registry. Keep this guarded behind operator confirmation."
+        description="This removes the manifest reference for this tag from the registry."
         footer={
           <div className="flex items-center justify-end gap-3">
             <Button variant="outline" onClick={() => setConfirmDeleteOpen(false)} disabled={deleteMutation.isPending}>
@@ -321,7 +321,7 @@ export function TagManagementCard({ repository, tag }: TagManagementCardProps) {
                 <p className="break-words">
                   You are about to delete <span className="break-all font-mono font-medium">{repository}:{tag}</span>.
                 </p>
-                <p>The action is proxied server-side and resolved against the current manifest digest.</p>
+                <p>The UI resolves the current manifest digest on the server before deleting it.</p>
               </div>
         </div>
 
@@ -337,7 +337,7 @@ export function TagManagementCard({ repository, tag }: TagManagementCardProps) {
         ) : deletePreview ? (
           <div className="mt-4 space-y-4">
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-              <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Resolved digest</p>
+              <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Manifest digest</p>
               <p className="mt-2 break-all font-mono text-xs text-foreground">{deletePreview.digest}</p>
             </div>
 
@@ -364,9 +364,8 @@ export function TagManagementCard({ repository, tag }: TagManagementCardProps) {
 
             {multiTagDelete ? (
               <div className="rounded-2xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm leading-6 text-amber-50">
-                This UI intentionally blocks delete for shared digests in plain Docker Registry mode. To retire only one
-                tag, push a new manifest for the tag you want to keep, or move cleanup to a registry product that
-                supports native tag deletion.
+                This UI blocks deletes for shared digests in plain Docker Registry mode. If you need to retire only one
+                tag, push a new manifest for the tag you want to keep or use a registry that supports native tag deletion.
               </div>
             ) : null}
           </div>

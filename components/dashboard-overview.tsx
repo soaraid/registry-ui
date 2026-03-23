@@ -1,122 +1,179 @@
 "use client";
 
+import type { AppBrandEnv } from "@/lib/env";
+import type { ComponentType } from "react";
 import Link from "next/link";
-import { ArrowRight, Box, Layers3, TerminalSquare } from "lucide-react";
+import { ArrowRight, Boxes, ShieldAlert, ShieldCheck, Waypoints, Wrench } from "lucide-react";
 
 import { useRegistryCatalog } from "@/hooks/use-registry-catalog";
+import { useRegistryHealth } from "@/hooks/use-registry-health";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
-const quickStart = [
-  "Set REGISTRY_URL and auth env vars in .env.local.",
-  "Open Repositories to browse the live catalog and lazy tag counts.",
-  "Use repository detail pages for manifest inspection and safe maintenance actions.",
+function SummaryCard({
+  label,
+  value,
+  icon: Icon,
+}: {
+  label: string;
+  value: string;
+  icon: ComponentType<{ className?: string }>;
+}) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+      <div className="mb-3 flex items-center gap-2 text-sm text-muted-foreground">
+        <Icon className="h-4 w-4" />
+        {label}
+      </div>
+      <p className="text-xl font-semibold tracking-tight">{value}</p>
+    </div>
+  );
+}
+
+const nextActions = [
+  {
+    title: "Browse repositories",
+    description: "Open the live catalog, search images, and drill into tag detail pages.",
+    href: "/repositories",
+  },
+  {
+    title: "Verify registry connection",
+    description: "Check reachability, auth mode, and catalog probe status before maintenance.",
+    href: "/settings",
+  },
+  {
+    title: "Clean up stale tags safely",
+    description: "Use delete preview and bulk cleanup only for singleton-digest candidates.",
+    href: "/repositories",
+  },
 ];
 
-export function DashboardOverview() {
+export function DashboardOverview({ branding }: { branding: AppBrandEnv }) {
   const catalogQuery = useRegistryCatalog();
+  const healthQuery = useRegistryHealth();
   const totalRepositories = catalogQuery.data?.repositories.length ?? 0;
+  const health = healthQuery.data;
 
   return (
     <div className="space-y-6">
-      <section className="grid gap-4 xl:grid-cols-[1.35fr_0.95fr]">
+      <section className="grid gap-4 xl:grid-cols-[1.2fr_1fr]">
         <Card className="overflow-hidden border-white/10 bg-gradient-to-br from-white/[0.08] via-white/[0.02] to-transparent">
-          <CardHeader>
-            <Badge className="mb-2 w-fit">soaraid/registry-ui</Badge>
-            <CardTitle className="max-w-2xl text-3xl tracking-tight md:text-4xl">
-              A premium control plane for private Docker registries.
-            </CardTitle>
-            <CardDescription className="max-w-2xl text-base leading-7">
-              Next.js 15 shell, proxy-backed registry access, and a dark operational UI for browsing,
-              inspecting, and safely maintaining images.
-            </CardDescription>
+          <CardHeader className="space-y-4">
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge className="w-fit">{branding.displayName}</Badge>
+              <Badge variant="outline">Custom registry dashboard</Badge>
+              {health ? (
+                <Badge className={health.reachable ? "bg-emerald-400/10 text-emerald-200" : "bg-rose-400/10 text-rose-100"}>
+                  {health.reachable ? "Registry reachable" : "Registry unreachable"}
+                </Badge>
+              ) : null}
+            </div>
+            <div>
+              <CardTitle className="max-w-3xl text-3xl tracking-tight md:text-4xl">Manage your custom registry</CardTitle>
+              <CardDescription className="mt-3 max-w-3xl text-base leading-7">
+                Browse repositories, inspect manifests, verify connectivity, and clean up tags with safer
+                Docker Registry behavior built into the UI.
+              </CardDescription>
+            </div>
           </CardHeader>
           <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center">
             <Link href="/repositories" className={cn(buttonVariants(), "gap-2")}>
-              Open explorer
+              Open repositories
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link href="/settings" className={buttonVariants({ variant: "outline" })}>
-              Review registry settings
+              Open settings
             </Link>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardDescription>Live overview</CardDescription>
-            <CardTitle>Registry status</CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-              <div className="mb-3 flex items-center gap-2 text-sm text-muted-foreground">
-                <Box className="h-4 w-4" />
-                Total repositories
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="sm:col-span-2">
+            {catalogQuery.isLoading ? (
+              <Skeleton className="h-28 w-full" />
+            ) : (
+              <SummaryCard label="Repositories" value={String(totalRepositories)} icon={Boxes} />
+            )}
+          </div>
+
+          {healthQuery.isLoading && !health ? (
+            <>
+              <Skeleton className="h-28 w-full" />
+              <Skeleton className="h-28 w-full" />
+              <Skeleton className="h-28 w-full sm:col-span-2" />
+            </>
+          ) : (
+            <>
+              <SummaryCard
+                label="Registry auth"
+                value={health?.authMode ?? "Unknown"}
+                icon={ShieldCheck}
+              />
+              <SummaryCard
+                label="Catalog probe"
+                value={health ? (health.catalogAccessible ? "Passed" : "Blocked") : "Unknown"}
+                icon={Waypoints}
+              />
+              <div className="sm:col-span-2">
+                <SummaryCard
+                  label="Delete policy"
+                  value="Shared-digest deletes blocked"
+                  icon={ShieldAlert}
+                />
               </div>
-              {catalogQuery.isLoading ? (
-                <Skeleton className="h-10 w-24" />
-              ) : (
-                <p className="text-4xl font-semibold tracking-tight">{totalRepositories}</p>
-              )}
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-              <div className="mb-3 flex items-center gap-2 text-sm text-muted-foreground">
-                <Layers3 className="h-4 w-4" />
-                Proxy surface
-              </div>
-              <p className="text-lg font-medium">Catalog, tags, manifests, cleanup</p>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Registry actions are proxied server-side for auth handling, safer deletes, and client caching.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+            </>
+          )}
+        </div>
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+      <section className="grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
         <Card>
           <CardHeader>
-            <CardDescription>Quick start</CardDescription>
-            <CardTitle>Operator checklist</CardTitle>
+            <CardDescription>Common tasks</CardDescription>
+            <CardTitle>Start here</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {quickStart.map((step, index) => (
-              <div
-                key={step}
-                className="flex gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4 transition-colors hover:bg-white/[0.05]"
+            {nextActions.map((item) => (
+              <Link
+                key={item.title}
+                href={item.href}
+                className="block rounded-2xl border border-white/10 bg-white/[0.03] p-4 transition-colors hover:bg-white/[0.05]"
               >
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-sm font-medium text-muted-foreground">
-                  {index + 1}
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-medium text-foreground">{item.title}</p>
+                    <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.description}</p>
+                  </div>
+                  <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
                 </div>
-                <p className="text-sm leading-6 text-foreground">{step}</p>
-              </div>
+              </Link>
             ))}
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardDescription>Command line bridge</CardDescription>
-            <CardTitle>Quick start command</CardTitle>
+            <CardDescription>Safety model</CardDescription>
+            <CardTitle>Maintenance guardrails</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="rounded-2xl border border-white/10 bg-zinc-950/80 p-4">
-              <div className="mb-3 flex items-center gap-2 text-sm text-zinc-400">
-                <TerminalSquare className="h-4 w-4" />
-                Docker runtime
+          <CardContent className="space-y-4">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+              <div className="mb-3 flex items-center gap-2 text-sm text-muted-foreground">
+                <Wrench className="h-4 w-4" />
+                Plain Docker Registry rules
               </div>
-              <code className="block overflow-x-auto text-sm text-zinc-100">
-                cp .env.example .env
-                <br />
-                docker compose up --build
-              </code>
+              <p className="text-sm leading-6 text-foreground">
+                This UI deletes by manifest digest, not by an isolated tag record. If multiple tags share one digest,
+                they are protected from direct deletion in the UI.
+              </p>
             </div>
-            <p className="mt-4 text-sm leading-6 text-muted-foreground">
-              The UI container runs independently and connects to a registry that is already running elsewhere.
-            </p>
+            <div className="rounded-2xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm leading-6 text-amber-50">
+              Bulk cleanup only executes singleton-digest candidates. Shared-digest tags are previewed as blocked and
+              left untouched.
+            </div>
           </CardContent>
         </Card>
       </section>

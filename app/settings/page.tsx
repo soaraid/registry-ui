@@ -5,13 +5,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator";
 
 const envRows = [
-  ["REGISTRY_URL", "Base URL of the Docker Registry V2 instance."],
-  ["REGISTRY_USERNAME", "Optional username for Basic auth or token exchange."],
-  ["REGISTRY_PASSWORD", "Optional password for Basic auth or token exchange."],
-  ["REGISTRY_BEARER_TOKEN", "Optional static bearer token for pre-issued registry auth."],
+  ["REGISTRY_URL", "Address of the registry this UI should connect to."],
+  ["REGISTRY_USERNAME", "Optional username for registry sign-in or token exchange."],
+  ["REGISTRY_PASSWORD", "Optional password for registry sign-in or token exchange."],
+  ["REGISTRY_BEARER_TOKEN", "Optional bearer token if your registry already gives you one."],
   ["APP_AUTH_USERNAME", "Optional single-user username for this UI."],
   ["APP_AUTH_PASSWORD", "Optional single-user password for this UI."],
-  ["APP_SESSION_SECRET", "Optional HMAC secret used to sign login session cookies."],
+  ["APP_SESSION_SECRET", "Optional secret used to sign the UI login session cookie."],
 ];
 
 export default function SettingsPage() {
@@ -32,17 +32,17 @@ export default function SettingsPage() {
     <div className="space-y-8">
       <div className="space-y-3">
         <Badge className="w-fit">Settings</Badge>
-        <h2 className="text-3xl font-semibold tracking-tight">Registry connection model</h2>
+        <h2 className="text-3xl font-semibold tracking-tight">Registry connection settings</h2>
         <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-          Authentication and CORS handling stay on the server through route handlers under
-          `app/api/registry`.
+          The browser talks to the registry through server-side routes, so auth and CORS handling stay
+          on the server.
         </p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardDescription>Resolved connection</CardDescription>
-          <CardTitle>Current runtime mode</CardTitle>
+          <CardDescription>Current connection</CardDescription>
+          <CardTitle>Runtime status</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4 md:grid-cols-3">
           <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
@@ -66,8 +66,8 @@ export default function SettingsPage() {
 
       <Card>
         <CardHeader>
-          <CardDescription>Environment contract</CardDescription>
-          <CardTitle>Supported auth configuration</CardTitle>
+          <CardDescription>Environment variables</CardDescription>
+          <CardTitle>Supported configuration</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {envRows.map(([key, description], index) => (

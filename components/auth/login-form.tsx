@@ -60,9 +60,9 @@ export function LoginForm({ authEnabled, defaultUsername, nextPath = "/" }: Logi
       <CardHeader>
         <CardDescription className="flex items-center gap-2 text-emerald-200">
           <LockKeyhole className="h-4 w-4" />
-          Protected session
+          Session sign-in
         </CardDescription>
-        <CardTitle className="text-3xl tracking-tight">Sign in to Registry UI</CardTitle>
+        <CardTitle className="text-3xl tracking-tight">Sign in to continue</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         <form className="space-y-4" onSubmit={handleSubmit}>
@@ -105,8 +105,8 @@ export function LoginForm({ authEnabled, defaultUsername, nextPath = "/" }: Logi
         </form>
 
         <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm leading-6 text-muted-foreground">
-          This app uses one env-configured account for now. Role-based permissions can be added later without
-          changing the registry proxy layer.
+          This app currently uses one env-configured account. It is meant to protect access to the UI while
+          keeping registry browsing and maintenance easier from the browser.
         </div>
       </CardContent>
     </Card>
