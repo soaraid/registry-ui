@@ -4,6 +4,10 @@ A modern Docker Registry UI built with Next.js 15, Tailwind CSS, and Shadcn-styl
 
 This repository now includes the premium app shell, the server-side Docker Registry proxy, repository and tag management flows, manifest inspection, a guarded delete workflow, and an optional login session for protecting the UI itself.
 
+Docker Hub:
+
+- https://hub.docker.com/repository/docker/soaraid/registry-ui/general
+
 ## Current Status
 
 Implemented now:
@@ -73,6 +77,11 @@ Production packaging is now included:
 - [docker-compose.example.yml](./docker-compose.example.yml)
 - [.env.example](./.env.example)
 
+Published image:
+
+- `soaraid/registry-ui:latest`
+- Docker Hub: https://hub.docker.com/repository/docker/soaraid/registry-ui/general
+
 Build locally:
 
 ```bash
@@ -119,6 +128,31 @@ docker run --rm -p 3000:3000 \
 ```
 
 Docker Hub style usage is shown in [docker-compose.example.yml](./docker-compose.example.yml). That file is meant to be copied into another project such as `soaraid/soara-hub`.
+
+Example with the published image:
+
+```yaml
+services:
+  registry-ui:
+    image: soaraid/registry-ui:latest
+    container_name: registry-ui
+    restart: unless-stopped
+    ports:
+      - "8001:3000"
+    environment:
+      REGISTRY_URL: http://registry:5000
+      REGISTRY_USERNAME: ""
+      REGISTRY_PASSWORD: ""
+      REGISTRY_BEARER_TOKEN: ""
+      APP_AUTH_USERNAME: operator
+      APP_AUTH_PASSWORD: change-me
+      APP_SESSION_SECRET: replace-with-a-long-random-secret
+      APP_BRAND_NAME: Soara
+      APP_PRODUCT_NAME: Registry UI
+      APP_LOGO_URL: https://cdn.example.com/brand/registry-ui-logo.png
+```
+
+If you want a simpler full registry stack with the UI already wired in, use the companion project `soaraid/soara-hub`. That project is intended to make self-hosted registry setup easier and includes Soara Registry UI as part of the stack.
 
 ## Environment Variables
 
@@ -175,6 +209,10 @@ Docker Hub style usage is shown in [docker-compose.example.yml](./docker-compose
 - Can be a full hosted URL or a local public path such as `/brand/logo.png`
 
 App login protection is enabled only when all three `APP_AUTH_*` values are present.
+
+## Docker Hub Overview
+
+For a shorter Docker-distribution summary, see [docs/DOCKER_HUB_OVERVIEW.md](./docs/DOCKER_HUB_OVERVIEW.md).
 
 ## How It Works
 

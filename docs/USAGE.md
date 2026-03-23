@@ -2,6 +2,10 @@
 
 This document explains how to run and use the current version of `soaraid/registry-ui`.
 
+Docker Hub:
+
+- https://hub.docker.com/repository/docker/soaraid/registry-ui/general
+
 ## Before You Start
 
 You need:
@@ -63,6 +67,11 @@ This repository now includes:
 - `docker-compose.example.yml`
 - `.env.example`
 
+Published image:
+
+- `soaraid/registry-ui:latest`
+- Docker Hub: https://hub.docker.com/repository/docker/soaraid/registry-ui/general
+
 Basic image build:
 
 ```bash
@@ -107,6 +116,31 @@ docker run --rm -p 3000:3000 \
 ```
 
 Published-image usage is represented by `docker-compose.example.yml`, which is intended to be copied into another project such as `soaraid/soara-hub`.
+
+Example with the published image:
+
+```yaml
+services:
+  registry-ui:
+    image: soaraid/registry-ui:latest
+    container_name: registry-ui
+    restart: unless-stopped
+    ports:
+      - "8001:3000"
+    environment:
+      REGISTRY_URL: http://registry:5000
+      REGISTRY_USERNAME: ""
+      REGISTRY_PASSWORD: ""
+      REGISTRY_BEARER_TOKEN: ""
+      APP_AUTH_USERNAME: operator
+      APP_AUTH_PASSWORD: change-me
+      APP_SESSION_SECRET: replace-with-a-long-random-secret
+      APP_BRAND_NAME: Soara
+      APP_PRODUCT_NAME: Registry UI
+      APP_LOGO_URL: https://cdn.example.com/brand/registry-ui-logo.png
+```
+
+If you want a simpler full setup for a self-hosted registry stack, use the companion project `soaraid/soara-hub`. That project is meant to simplify registry deployment and already includes this UI in the stack.
 
 ## Authentication Modes
 
