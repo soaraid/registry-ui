@@ -131,7 +131,7 @@ docker run --rm -p 3000:3000 \
   soaraid/registry-ui:local
 ```
 
-Docker Hub style usage is shown in [docker-compose.example.yml](./docker-compose.example.yml). That file is meant to be copied into another project such as `soaraid/soara-hub`.
+Docker Hub style usage is shown in [docker-compose.example.yml](./docker-compose.example.yml). That file is meant to be copied into another project such as [soaraid/soara-hub](https://github.com/soaraid/soara-hub).
 
 Example with the published image:
 
@@ -157,7 +157,97 @@ services:
       APP_LOGO_URL: https://cdn.example.com/brand/registry-ui-logo.png
 ```
 
-If you want a simpler full registry stack with the UI already wired in, use the companion project `soaraid/soara-hub`. That project is intended to make self-hosted registry setup easier and includes Soara Registry UI as part of the stack.
+If you want a simpler full registry stack with the UI already wired in, use the companion project [soaraid/soara-hub](https://github.com/soaraid/soara-hub). That project is intended to make self-hosted registry setup easier and includes Soara Registry UI as part of the stack.
+
+Example reverse proxy for one public domain:
+
+```nginx
+server {
+    listen 80;
+    server_name hub.soara.id;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name hub.soara.id;
+
+    ssl_certificate /etc/letsencrypt/live/hub.soara.id/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/hub.soara.id/privkey.pem;
+
+    client_max_body_size 0;
+    proxy_read_timeout 900;
+    proxy_send_timeout 900;
+
+    location /v2/ {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_http_version 1.1;
+
+        proxy_request_buffering off;
+        proxy_buffering off;
+
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        add_header Docker-Distribution-Api-Version "registry/2.0" always;
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:8101;
+        proxy_http_version 1.1;
+
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+Example full stack with registry and UI:
+
+```yaml
+services:
+  registry:
+    image: registry:2.7
+    container_name: ${REGISTRY_CONTAINER_NAME:-registry}
+    restart: unless-stopped
+    ports:
+      - "${REGISTRY_PORT:-5000}:5000"
+    environment:
+      REGISTRY_AUTH: htpasswd
+      REGISTRY_AUTH_HTPASSWD_REALM: "${REGISTRY_AUTH_REALM:-Private Docker Registry}"
+      REGISTRY_AUTH_HTPASSWD_PATH: ${REGISTRY_AUTH_HTPASSWD_PATH:-/auth/htpasswd}
+      REGISTRY_STORAGE_DELETE_ENABLED: "true"
+    volumes:
+      - ${REGISTRY_DATA_DIR:-./data}:/var/lib/registry
+      - ${REGISTRY_AUTH_DIR:-./auth}:/auth
+      - ${REGISTRY_CONFIG_FILE:-./config.yml}:/etc/docker/registry/config.yml:ro
+    user: "${REGISTRY_UID:-1000}:${REGISTRY_GID:-1000}"
+
+  registry-ui:
+    image: soaraid/registry-ui:latest
+    container_name: ${REGISTRY_UI_CONTAINER_NAME:-registry-ui}
+    restart: unless-stopped
+    ports:
+      - "${REGISTRY_UI_PORT:-8101}:3000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      REGISTRY_URL: ${REGISTRY_URL:-http://registry:5000}
+      REGISTRY_PUBLIC_URL: ${REGISTRY_PUBLIC_URL:-hub.soara.id}
+      REGISTRY_USERNAME: ${REGISTRY_USERNAME:?set REGISTRY_USERNAME in .env}
+      REGISTRY_PASSWORD: ${REGISTRY_PASSWORD:?set REGISTRY_PASSWORD in .env}
+      REGISTRY_BEARER_TOKEN: ${REGISTRY_BEARER_TOKEN:-}
+      APP_AUTH_USERNAME: ${APP_AUTH_USERNAME:?set APP_AUTH_USERNAME in .env}
+      APP_AUTH_PASSWORD: ${APP_AUTH_PASSWORD:?set APP_AUTH_PASSWORD in .env}
+      APP_SESSION_SECRET: ${APP_SESSION_SECRET:?set APP_SESSION_SECRET in .env}
+      APP_BRAND_NAME: ${APP_BRAND_NAME:-Soara}
+      APP_PRODUCT_NAME: ${APP_PRODUCT_NAME:-Registry UI}
+      APP_LOGO_URL: ${APP_LOGO_URL:-/brand/logo.png}
+```
 
 ## Environment Variables
 
