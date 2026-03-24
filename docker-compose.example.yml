@@ -9,6 +9,7 @@ services:
       - "host.docker.internal:host-gateway"
     environment:
       REGISTRY_URL: http://registry:5000
+      REGISTRY_PUBLIC_URL: hub.soara.id
       REGISTRY_USERNAME: ""
       REGISTRY_PASSWORD: ""
       REGISTRY_BEARER_TOKEN: ""

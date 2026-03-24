@@ -32,6 +32,7 @@ Example configuration:
 
 ```env
 REGISTRY_URL=http://localhost:5000
+REGISTRY_PUBLIC_URL=localhost:5000
 REGISTRY_USERNAME=admin
 REGISTRY_PASSWORD=secret
 REGISTRY_BEARER_TOKEN=
@@ -86,7 +87,7 @@ Create a Docker env file:
 cp .env.example .env
 ```
 
-Then edit `.env` with the registry endpoint you want this UI to use.
+Then edit `.env` with the backend registry endpoint this UI should use. If users pull through another host or domain, also set `REGISTRY_PUBLIC_URL`.
 
 Local Compose run:
 
@@ -104,11 +105,20 @@ REGISTRY_URL=https://registry.example.com
 
 Use `http://registry:5000` when this UI is joined to the same Docker network as a registry container named `registry`.
 
+Useful `REGISTRY_PUBLIC_URL` examples:
+
+```env
+REGISTRY_PUBLIC_URL=localhost:5000
+REGISTRY_PUBLIC_URL=hub.soara.id
+REGISTRY_PUBLIC_URL=https://registry.example.com
+```
+
 Basic container run:
 
 ```bash
 docker run --rm -p 3000:3000 \
   -e REGISTRY_URL=http://host.docker.internal:5000 \
+  -e REGISTRY_PUBLIC_URL=hub.soara.id \
   -e APP_AUTH_USERNAME=operator \
   -e APP_AUTH_PASSWORD=change-me \
   -e APP_SESSION_SECRET=replace-with-a-long-random-secret \
@@ -129,6 +139,7 @@ services:
       - "8001:3000"
     environment:
       REGISTRY_URL: http://registry:5000
+      REGISTRY_PUBLIC_URL: hub.soara.id
       REGISTRY_USERNAME: ""
       REGISTRY_PASSWORD: ""
       REGISTRY_BEARER_TOKEN: ""
@@ -174,6 +185,21 @@ REGISTRY_BEARER_TOKEN=your-token
 ```
 
 If `REGISTRY_BEARER_TOKEN` is set, it takes precedence over username/password.
+
+### Pull Command Endpoint
+
+If the UI connects to an internal registry address, set a separate public pull endpoint:
+
+```env
+REGISTRY_URL=http://registry:5000
+REGISTRY_PUBLIC_URL=hub.soara.id
+```
+
+This makes the app connect internally to `http://registry:5000` while generated pull commands use:
+
+```bash
+docker pull hub.soara.id/<repository>:<tag>
+```
 
 ## App Login Session
 

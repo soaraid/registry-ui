@@ -23,11 +23,13 @@ Container usage model:
 - this image runs only the UI
 - it does not start `registry:2`
 - point it at an existing registry with `REGISTRY_URL`
+- if users pull through a different public host, set `REGISTRY_PUBLIC_URL`
 
 Main runtime env vars:
 
 ```env
 REGISTRY_URL=http://registry:5000
+REGISTRY_PUBLIC_URL=hub.soara.id
 REGISTRY_USERNAME=
 REGISTRY_PASSWORD=
 REGISTRY_BEARER_TOKEN=
@@ -50,6 +52,7 @@ services:
       - "8001:3000"
     environment:
       REGISTRY_URL: http://registry:5000
+      REGISTRY_PUBLIC_URL: hub.soara.id
       APP_AUTH_USERNAME: operator
       APP_AUTH_PASSWORD: change-me
       APP_SESSION_SECRET: replace-with-a-long-random-secret

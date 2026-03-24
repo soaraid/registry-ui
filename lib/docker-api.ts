@@ -79,6 +79,7 @@ export interface DeleteTagPreview {
 export interface RegistryHealthReport {
   checkedAt: string;
   registryHost: string;
+  pullHost: string;
   authMode: string;
   reachable: boolean;
   registryApiAvailable: boolean;
@@ -193,15 +194,35 @@ function parseBearerChallenge(header: string): ChallengeParams | null {
 
 function getRegistryImageBase() {
   const env = getRegistryEnv();
-  const registryUrl = new URL(env.url);
-  const pathname = registryUrl.pathname.replace(/^\/+|\/+$/g, "");
+  const rawValue = env.publicUrl || env.url;
 
-  return pathname ? `${registryUrl.host}/${pathname}` : registryUrl.host;
+  if (/^https?:\/\//i.test(rawValue)) {
+    const registryUrl = new URL(rawValue);
+    const pathname = registryUrl.pathname.replace(/^\/+|\/+$/g, "").replace(/\/v2$/i, "");
+
+    return pathname ? `${registryUrl.host}/${pathname}` : registryUrl.host;
+  }
+
+  return rawValue.replace(/^\/+|\/+$/g, "").replace(/\/v2$/i, "");
 }
 
 function getRegistryHost() {
   const env = getRegistryEnv();
   return new URL(env.url).host;
+}
+
+function getRegistryPullHost() {
+  const env = getRegistryEnv();
+  const rawValue = env.publicUrl || env.url;
+
+  if (/^https?:\/\//i.test(rawValue)) {
+    const registryUrl = new URL(rawValue);
+    const pathname = registryUrl.pathname.replace(/^\/+|\/+$/g, "").replace(/\/v2$/i, "");
+
+    return pathname ? `${registryUrl.host}/${pathname}` : registryUrl.host;
+  }
+
+  return rawValue.replace(/^\/+|\/+$/g, "").replace(/\/v2$/i, "");
 }
 
 function unique(values: Array<string | undefined>) {
@@ -434,6 +455,7 @@ export async function getRegistryHealthReport(): Promise<RegistryHealthReport> {
     return {
       checkedAt: new Date().toISOString(),
       registryHost: getRegistryHost(),
+      pullHost: getRegistryPullHost(),
       authMode: env.authMode,
       reachable: true,
       registryApiAvailable: true,
@@ -448,6 +470,13 @@ export async function getRegistryHealthReport(): Promise<RegistryHealthReport> {
       registryHost: (() => {
         try {
           return getRegistryHost();
+        } catch {
+          return "Unavailable";
+        }
+      })(),
+      pullHost: (() => {
+        try {
+          return getRegistryPullHost();
         } catch {
           return "Unavailable";
         }

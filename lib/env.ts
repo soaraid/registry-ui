@@ -5,6 +5,7 @@ export interface RegistryEnv {
   username?: string;
   password?: string;
   bearerToken?: string;
+  publicUrl?: string;
   authMode: RegistryAuthMode;
 }
 
@@ -36,6 +37,7 @@ export function getRegistryEnv(): RegistryEnv {
   const username = process.env.REGISTRY_USERNAME?.trim() || undefined;
   const password = process.env.REGISTRY_PASSWORD?.trim() || undefined;
   const bearerToken = process.env.REGISTRY_BEARER_TOKEN?.trim() || undefined;
+  const publicUrl = process.env.REGISTRY_PUBLIC_URL?.trim() || undefined;
 
   const authMode: RegistryAuthMode = bearerToken
     ? "bearer"
@@ -48,6 +50,7 @@ export function getRegistryEnv(): RegistryEnv {
     username,
     password,
     bearerToken,
+    publicUrl,
     authMode,
   };
 }

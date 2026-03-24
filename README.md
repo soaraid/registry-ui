@@ -48,6 +48,7 @@ cp .env.example .env.local
 
 ```env
 REGISTRY_URL=http://localhost:5000
+REGISTRY_PUBLIC_URL=localhost:5000
 REGISTRY_USERNAME=
 REGISTRY_PASSWORD=
 REGISTRY_BEARER_TOKEN=
@@ -96,7 +97,7 @@ For local Docker usage, create a Docker env file first:
 cp .env.example .env
 ```
 
-Then edit `.env` and set `REGISTRY_URL` to your actual registry endpoint.
+Then edit `.env` and set `REGISTRY_URL` to the backend registry endpoint this UI should connect to. If users should pull through a different public host, also set `REGISTRY_PUBLIC_URL`.
 
 Build and run the standalone UI with Compose:
 
@@ -108,12 +109,14 @@ If your registry is on the host machine, set:
 
 ```env
 REGISTRY_URL=http://host.docker.internal:5000
+REGISTRY_PUBLIC_URL=localhost:5000
 ```
 
 If your registry is running in another Compose project on a shared Docker network, set for example:
 
 ```env
 REGISTRY_URL=http://registry:5000
+REGISTRY_PUBLIC_URL=hub.soara.id
 ```
 
 Run the built image directly:
@@ -121,6 +124,7 @@ Run the built image directly:
 ```bash
 docker run --rm -p 3000:3000 \
   -e REGISTRY_URL=http://host.docker.internal:5000 \
+  -e REGISTRY_PUBLIC_URL=hub.soara.id \
   -e APP_AUTH_USERNAME=operator \
   -e APP_AUTH_PASSWORD=change-me \
   -e APP_SESSION_SECRET=replace-with-a-long-random-secret \
@@ -141,6 +145,7 @@ services:
       - "8001:3000"
     environment:
       REGISTRY_URL: http://registry:5000
+      REGISTRY_PUBLIC_URL: hub.soara.id
       REGISTRY_USERNAME: ""
       REGISTRY_PASSWORD: ""
       REGISTRY_BEARER_TOKEN: ""
@@ -161,6 +166,13 @@ If you want a simpler full registry stack with the UI already wired in, use the 
 - Required
 - Base URL of your Docker Registry V2 instance
 - Examples: `http://host.docker.internal:5000`, `http://registry:5000`, `https://registry.example.com`
+
+`REGISTRY_PUBLIC_URL`
+
+- Optional
+- Public host or URL users should use in generated `docker pull` commands
+- Use this when the UI connects to an internal address like `http://registry:5000` but users pull through a public host like `hub.soara.id`
+- Examples: `hub.soara.id`, `registry.example.com`, `https://registry.example.com`
 
 `REGISTRY_USERNAME`
 

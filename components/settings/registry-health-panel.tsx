@@ -75,8 +75,9 @@ export function RegistryHealthPanel() {
               </Badge>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
               <HealthItem label="Registry host" value={health.registryHost} icon={ServerCog} />
+              <HealthItem label="Pull endpoint" value={health.pullHost} icon={ServerCog} />
               <HealthItem label="Auth mode" value={health.authMode} icon={ShieldCheck} />
               <HealthItem label="Response time" value={`${health.responseTimeMs} ms`} icon={Activity} />
               <HealthItem

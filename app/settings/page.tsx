@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 
 const envRows = [
   ["REGISTRY_URL", "Address of the registry this UI should connect to."],
+  ["REGISTRY_PUBLIC_URL", "Public host or URL users should use for docker pull commands."],
   ["REGISTRY_USERNAME", "Optional username for registry sign-in or token exchange."],
   ["REGISTRY_PASSWORD", "Optional password for registry sign-in or token exchange."],
   ["REGISTRY_BEARER_TOKEN", "Optional bearer token if your registry already gives you one."],
@@ -16,12 +17,13 @@ const envRows = [
 
 export default function SettingsPage() {
   const appAuthEnv = getAppAuthEnv();
-  let resolvedConnection: { host: string; authMode: string } | null = null;
+  let resolvedConnection: { host: string; pullHost: string; authMode: string } | null = null;
 
   try {
     const registryEnv = getRegistryEnv();
     resolvedConnection = {
       host: new URL(registryEnv.url).host,
+      pullHost: registryEnv.publicUrl || new URL(registryEnv.url).host,
       authMode: registryEnv.authMode,
     };
   } catch {
@@ -44,10 +46,16 @@ export default function SettingsPage() {
           <CardDescription>Current connection</CardDescription>
           <CardTitle>Runtime status</CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-4 md:grid-cols-3">
+        <CardContent className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <div className="soft-panel rounded-2xl p-4">
             <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Registry host</p>
             <p className="mt-2 text-sm text-foreground">{resolvedConnection?.host ?? "Not configured"}</p>
+          </div>
+          <div className="soft-panel rounded-2xl p-4">
+            <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Pull endpoint</p>
+            <p className="mt-2 break-all text-sm text-foreground">
+              {resolvedConnection?.pullHost ?? "Falls back to REGISTRY_URL"}
+            </p>
           </div>
           <div className="soft-panel rounded-2xl p-4">
             <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Auth mode</p>

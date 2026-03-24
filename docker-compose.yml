@@ -12,6 +12,7 @@ services:
       - "host.docker.internal:host-gateway"
     environment:
       REGISTRY_URL: ${REGISTRY_URL}
+      REGISTRY_PUBLIC_URL: ${REGISTRY_PUBLIC_URL:-}
       REGISTRY_USERNAME: ${REGISTRY_USERNAME:-}
       REGISTRY_PASSWORD: ${REGISTRY_PASSWORD:-}
       REGISTRY_BEARER_TOKEN: ${REGISTRY_BEARER_TOKEN:-}
